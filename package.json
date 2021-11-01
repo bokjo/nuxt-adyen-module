@@ -1,7 +1,7 @@
 {
   "name": "nuxt-adyen-module",
-  "version": "0.0.0",
-  "description": "Adyen Module for Nuxt.js",
+  "version": "1.0.0",
+  "description": "Adyen Payment Module for Nuxt.js",
   "repository": "baroshem/nuxt-adyen-module",
   "license": "MIT",
   "contributors": [
@@ -19,7 +19,9 @@
     "release": "yarn test && standard-version && git push --follow-tags && npm publish",
     "test": "yarn lint && jest"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@adyen/adyen-web": "^5.1.0"
+  },
   "devDependencies": {
     "@babel/core": "latest",
     "@babel/preset-env": "latest",
