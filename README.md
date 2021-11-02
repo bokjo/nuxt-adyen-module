@@ -34,7 +34,11 @@ yarn add nuxt-adyen-module # or npm install nuxt-adyen-module
 
 * `clientKey` - <https://docs.adyen.com/development-resources/client-side-authentication#get-your-client-key>
 
-3. Copy `AdyenCheckout.vue` component from the library to your project
+3. Copy `AdyenCheckout.vue` component from the library to your project or import it directly from this package
+
+```js
+import AdyenCheckout from 'nuxt-adyen-module/lib/AdyenCheckout.vue';
+```
 
 4. Provide all necessary data to the AdyenCheckout component like props, props functions, and mocked payment response.
 
