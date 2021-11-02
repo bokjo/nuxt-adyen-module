@@ -1,8 +1,8 @@
 <template>
   <div>
     <adyen-checkout
-      :amount="1000"
-      :currency="'EUR'"
+      :amount="mockedPrice.amount"
+      :currency="mockedPrice.currency"
       :paymentMethodsResponse="paymentMethodsMock"
       :onSubmit="onSubmit"
       :onAdditionalDetails="onAdditionalDetails"
@@ -18,6 +18,14 @@ import paymentMethodsMock from "../paymentMethodsMock.json";
 export default {
   components: {
     AdyenCheckout
+  },
+  data() {
+    return {
+      mockedPrice: {
+        amount: 1000,
+        currency: 'EUR',
+      }
+    }
   },
   computed: {
     paymentMethodsMock() {

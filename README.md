@@ -38,6 +38,75 @@ yarn add nuxt-adyen-module # or npm install nuxt-adyen-module
 
 4. Provide all necessary data to the AdyenCheckout component like props, props functions, and mocked payment response.
 
+```vue
+// Checkout.vue
+
+<template>
+  <adyen-checkout
+    :amount="mockedPrice.amount"
+    :currency="mockedPrice.currency"`
+    :paymentMethodsResponse="paymentMethodsMock"
+    :onSubmit="onSubmit"
+    :onAdditionalDetails="onAdditionalDetails"
+    @payment-submitted="logPaymentSubmittedData"
+    @additional-details="logAdditionalDetails"
+  />
+</template>
+
+<script>
+import AdyenCheckout from '../components/AdyenCheckout.vue';
+import paymentMethodsMock from "../paymentMethodsMock.json";
+export default {
+  components: {
+    AdyenCheckout
+  },
+  data() {
+    return {
+      mockedPrice: {
+        amount: 1000,
+        currency: 'EUR',
+      }
+    }
+  },
+  computed: {
+    paymentMethodsMock() {
+      return paymentMethodsMock;
+    }
+  },
+  methods: {
+    logPaymentSubmittedData(e) {
+      console.log('logPaymentSubmittedData', e)
+    },
+    logAdditionalDetails(e) {
+      console.log('logAdditionalDetails', e)
+    },
+    onSubmit(state, dropin) {
+      dropin.setStatus("loading");
+
+      setTimeout(() => {
+        dropin.setStatus("finished")
+      }, 3000)
+    },
+    onAdditionalDetails(state, dropin) {
+      console.log(state);
+    }
+  }
+}
+</script>
+```
+
+## Testing
+
+You can test the Adyen Checkout by using the following card:
+
+Card Number: 2222 4000 7000 0005
+Expiry Date: 03/2030
+CVC3: 737
+
+Or any other listed here:
+
+<https://docs.adyen.com/development-resources/test-cards/test-card-numbers#mastercard>
+
 ## Development
 
 1. Clone this repository

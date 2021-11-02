@@ -32,9 +32,9 @@ export default {
       const { default: AdyenCheckout } = await import('@adyen/adyen-web');
 
       const configuration = {
-        locale: this.$config.adyen.locale,
-        environment: this.$config.adyen.environment,
-        clientKey: this.$config.adyen.clientKey,
+        locale: this.$adyen.locale,
+        environment: this.$adyen.environment,
+        clientKey: this.$adyen.clientKey,
         paymentMethodsResponse: this.paymentMethodsResponse,
         amount: {
           value: this.amount,
