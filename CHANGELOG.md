@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/baroshem/nuxt-adyen-module/compare/v1.0.0...v1.1.0) (2021-11-03)
+
+
+### Features
+
+* fix prop type default value ([42bc033](https://github.com/baroshem/nuxt-adyen-module/commit/42bc033ddf684ba64ad51e6a5f799203c018fb9b))
+
 ## 1.0.0 (2021-11-03)
 
 
