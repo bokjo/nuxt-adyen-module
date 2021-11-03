@@ -32,7 +32,7 @@ export default {
     },
     configuration: {
       type: Object,
-      default: {}
+      default: () => ({})
     }
   },
   methods: {
