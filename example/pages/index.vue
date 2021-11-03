@@ -5,9 +5,11 @@
       :currency="mockedPrice.currency"
       :paymentMethodsResponse="paymentMethodsMock"
       :onSubmit="onSubmit"
+      :onError="onError"
       :onAdditionalDetails="onAdditionalDetails"
       @payment-submitted="logPaymentSubmittedData"
       @additional-details="logAdditionalDetails"
+      @payment-error="logError"
     />
   </div>
 </template>
@@ -39,6 +41,9 @@ export default {
     logAdditionalDetails(e) {
       console.log('logAdditionalDetails', e)
     },
+    logError(e) {
+      console.log('logError', e)
+    },
     onSubmit(state, dropin) {
       dropin.setStatus("loading");
 
@@ -47,6 +52,9 @@ export default {
       }, 3000)
     },
     onAdditionalDetails(state, dropin) {
+      console.log(state);
+    },
+    onError(state, dropin) {
       console.log(state);
     }
   }

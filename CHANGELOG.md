@@ -4,7 +4,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## 1.0.0 (2021-11-03)
 
-
 ### Features
 
 * add basic error handling ([0f5af09](https://github.com/baroshem/nuxt-adyen-module/commit/0f5af09487375ffab361dfbcd9ca2bc630d87902))

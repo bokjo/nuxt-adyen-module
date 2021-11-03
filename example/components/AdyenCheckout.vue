@@ -25,6 +25,14 @@ export default {
     onAdditionalDetails: {
       type: Function,
       required: true,
+    },
+    onError: {
+      type: Function,
+      required: true,
+    },
+    configuration: {
+      type: Object,
+      default: {}
     }
   },
   methods: {
@@ -41,16 +49,22 @@ export default {
           currency: this.currency
         },
         onSubmit: async (state, dropin) => {
-          await this.onSubmit(state, dropin)
+          await this.onSubmit(state, dropin);
           this.$emit('payment-submitted', state);
         },
         onAdditionalDetails: async (state, dropin) => {
-          await this.onAdditionalDetails(state, dropin)
+          await this.onAdditionalDetails(state, dropin);
           this.$emit('additional-details', state);
-        }
+        },
+        onError: async (state, dropin) => {
+          await this.onError(state, dropin);
+          this.$emit('payment-error', state);
+        },
       };
 
-      const checkout = await new AdyenCheckout(configuration);
+      const checkoutConfiguration = Object.keys(this.configuration).length ? this.configuration : configuration
+
+      const checkout = await new AdyenCheckout(checkoutConfiguration);
 
       checkout.create("dropin").mount("#adyen-dropin");
     }
