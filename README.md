@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./docs/static/preview.png" alt="nuxt-adyen-module logo">
+</p>
+
 # nuxt-adyen-module
 
 [![npm version][npm-version-src]][npm-version-href]
@@ -118,6 +122,20 @@ CVC3: 737
 Or any other listed here:
 
 <https://docs.adyen.com/development-resources/test-cards/test-card-numbers#mastercard>
+
+## Documentation
+
+Move to the `docs` directory:
+
+```bash
+cd docs
+```
+
+Install dependencies and start the project in development mode:
+
+```bash
+yarn && yarn dev
+```
 
 ## Development
 
