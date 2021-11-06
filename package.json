@@ -2,8 +2,6 @@
   "name": "nuxt-adyen-module",
   "version": "1.1.0",
   "description": "Adyen Payment Module for Nuxt.js",
-  "repository": "baroshem/nuxt-adyen-module",
-  "license": "MIT",
   "keywords": [
     "nuxt",
     "module",
@@ -14,45 +12,48 @@
     "checkout",
     "plugins"
   ],
+  "repository": "baroshem/nuxt-adyen-module",
+  "license": "MIT",
   "contributors": [
     {
       "name": "Baroshem <jakub.andrzejewski.dev@gmail.com>"
     }
   ],
   "sideEffects": false,
+  "main": "dist/module.js",
+  "types": "dist/module.d.ts",
   "files": [
-    "lib"
+    "dist",
+    "src/AdyenCheckout.vue"
   ],
-  "main": "lib/module.js",
   "scripts": {
-    "dev": "nuxt example",
-    "lint": "eslint --ext .js,.vue .",
-    "release": "yarn test && standard-version && git push --follow-tags && npm publish",
+    "build": "siroc build  && mkdist --src src/runtime --dist dist/runtime",
+    "dev": "nuxt-ts example",
+    "lint": "eslint --ext .js,.ts,.vue .",
+    "release": "yarn build && yarn test && standard-version && git push --follow-tags && npm publish",
     "test": "yarn lint && jest"
-  },
-  "husky": {
-    "gitHooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "dependencies": {
     "@adyen/adyen-web": "5.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/preset-env": "^7.6.16",
-    "@commitlint/cli": "^14.1.0",
-    "@commitlint/config-conventional": "^14.1.0",
-    "@nuxtjs/eslint-config": "^7.0.0",
-    "@nuxtjs/module-test-utils": "^1.6.3",
-    "babel-eslint": "^10.0.2",
-    "babel-jest": "^27.3.1",
-    "eslint": "^6.8.0",
+    "@babel/plugin-transform-runtime": "latest",
+    "@babel/preset-env": "latest",
+    "@babel/preset-typescript": "latest",
+    "@nuxt/test-utils": "latest",
+    "@nuxt/types": "latest",
+    "@nuxt/typescript-runtime": "latest",
+    "@nuxtjs/eslint-config-typescript": "latest",
+    "@siroc/jest-preset": "latest",
+    "@types/jest": "latest",
+    "babel-eslint": "latest",
+    "babel-jest": "latest",
+    "eslint": "latest",
+    "jest": "latest",
     "husky": "^7.0.4",
-    "jest": "^25.3.0",
     "nuxt-edge": "latest",
-    "css-loader": "^5.2.0",
-    "standard-version": "^9.3.2"
+    "siroc": "latest",
+    "standard-version": "latest"
   },
   "publishConfig": {
     "access": "public"
