@@ -1,12 +1,12 @@
 <template>
   <div>
     <adyen-checkout
-      :amount="mockedPrice.amount"
-      :currency="mockedPrice.currency"
-      :paymentMethodsResponse="paymentMethodsMock"
-      :onSubmit="onSubmit"
-      :onError="onError"
-      :onAdditionalDetails="onAdditionalDetails"
+      :amount="priceMock.amount"
+      :currency="priceMock.currency"
+      :payment-methods-response="paymentMethodsMock"
+      :on-submit="onSubmit"
+      :on-error="onError"
+      :on-additional-details="onAdditionalDetails"
       @payment-submitted="logPaymentSubmittedData"
       @additional-details="logAdditionalDetails"
       @payment-error="logError"
@@ -15,47 +15,52 @@
 </template>
 
 <script>
-import AdyenCheckout from '../components/AdyenCheckout.vue';
-import paymentMethodsMock from "../paymentMethodsMock.json";
+import AdyenCheckout from '../../src/AdyenCheckout.vue'
+import paymentMethodsMock from '../mocks/paymentMethodsMock.json'
+import { priceMock } from '../mocks/priceMock'
+
 export default {
   components: {
     AdyenCheckout
   },
-  data() {
-    return {
-      mockedPrice: {
-        amount: 1000,
-        currency: 'EUR',
-      }
-    }
-  },
   computed: {
-    paymentMethodsMock() {
-      return paymentMethodsMock;
+    paymentMethodsMock () {
+      return paymentMethodsMock
+    },
+    priceMock () {
+      return priceMock
     }
   },
   methods: {
-    logPaymentSubmittedData(e) {
+    logPaymentSubmittedData (e) {
+      // eslint-disable-next-line no-console
       console.log('logPaymentSubmittedData', e)
     },
-    logAdditionalDetails(e) {
+    logAdditionalDetails (e) {
+      // eslint-disable-next-line no-console
       console.log('logAdditionalDetails', e)
     },
-    logError(e) {
+    logError (e) {
+      // eslint-disable-next-line no-console
       console.log('logError', e)
     },
-    onSubmit(state, dropin) {
-      dropin.setStatus("loading");
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    onSubmit (state, dropin) {
+      dropin.setStatus('loading')
 
       setTimeout(() => {
-        dropin.setStatus("finished")
+        dropin.setStatus('finished')
       }, 3000)
     },
-    onAdditionalDetails(state, dropin) {
-      console.log(state);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    onAdditionalDetails (state, dropin) {
+      // eslint-disable-next-line no-console
+      console.log(state)
     },
-    onError(state, dropin) {
-      console.log(state);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    onError (state, dropin) {
+      // eslint-disable-next-line no-console
+      console.log(state)
     }
   }
 }

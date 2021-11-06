@@ -1,43 +1,46 @@
 <template>
-  <div id="adyen-dropin"></div>
+  <div id="adyen-dropin" />
 </template>
 
 <script>
 export default {
-  name: "AdyenCheckout",
+  name: 'AdyenCheckout',
   props: {
     amount: {
       type: Number,
-      required: true,
+      required: true
     },
     currency: {
       type: String,
-      required: true,
+      required: true
     },
     paymentMethodsResponse: {
       type: Object,
-      required: true,
+      required: true
     },
     onSubmit: {
       type: Function,
-      required: true,
+      required: true
     },
     onAdditionalDetails: {
       type: Function,
-      required: true,
+      required: true
     },
     onError: {
       type: Function,
-      required: true,
+      required: true
     },
     configuration: {
       type: Object,
       default: () => ({})
     }
   },
+  async mounted () {
+    await this.initAdyenCheckout()
+  },
   methods: {
-    async initAdyenCheckout() {
-      const { default: AdyenCheckout } = await import('@adyen/adyen-web');
+    async initAdyenCheckout () {
+      const { default: AdyenCheckout } = await import('@adyen/adyen-web')
 
       const configuration = {
         locale: this.$adyen.locale,
@@ -49,30 +52,27 @@ export default {
           currency: this.currency
         },
         onSubmit: async (state, dropin) => {
-          await this.onSubmit(state, dropin);
-          this.$emit('payment-submitted', state);
+          await this.onSubmit(state, dropin)
+          this.$emit('payment-submitted', state)
         },
         onAdditionalDetails: async (state, dropin) => {
-          await this.onAdditionalDetails(state, dropin);
-          this.$emit('additional-details', state);
+          await this.onAdditionalDetails(state, dropin)
+          this.$emit('additional-details', state)
         },
         onError: async (state, dropin) => {
-          await this.onError(state, dropin);
-          this.$emit('payment-error', state);
-        },
-      };
+          await this.onError(state, dropin)
+          this.$emit('payment-error', state)
+        }
+      }
 
       const checkoutConfiguration = Object.keys(this.configuration).length ? this.configuration : configuration
 
-      const checkout = await new AdyenCheckout(checkoutConfiguration);
+      const checkout = await new AdyenCheckout(checkoutConfiguration)
 
-      checkout.create("dropin").mount("#adyen-dropin");
+      checkout.create('dropin').mount('#adyen-dropin')
     }
-  },
-  async mounted() {
-    await this.initAdyenCheckout();
   }
-};
+}
 </script>
 
 <style src="@adyen/adyen-web/dist/adyen.css"></style>

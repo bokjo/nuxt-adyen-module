@@ -1,17 +1,9 @@
-const { resolve } = require('path')
+export default {
+  modules: ['../src/module.ts'],
 
-module.exports = {
-  rootDir: resolve(__dirname, '..'),
-  buildDir: resolve(__dirname, '.nuxt'),
-  srcDir: __dirname,
-  modules: [
-    {
-      handler: require('../'),
-      options: {
-        locale: "en_US",
-        environment: "test",
-        clientKey: "test_WG67OK3NLFG2TEPX4WVVXBY6ZYIZQUHO",
-      }
-    }
-  ]
+  adyen: {
+    locale: process.env.ADYEN_LOCALE,
+    environment: process.env.ADYEN_ENVIRONMENT,
+    clientKey: process.env.ADYEN_CLIENT_KEY
+  }
 }
