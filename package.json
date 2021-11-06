@@ -4,11 +4,22 @@
   "description": "Adyen Payment Module for Nuxt.js",
   "repository": "baroshem/nuxt-adyen-module",
   "license": "MIT",
+  "keywords": [
+    "nuxt",
+    "module",
+    "nuxt-adyen",
+    "adyen",
+    "payment",
+    "gateway",
+    "checkout",
+    "plugins"
+  ],
   "contributors": [
     {
       "name": "Baroshem <jakub.andrzejewski.dev@gmail.com>"
     }
   ],
+  "sideEffects": false,
   "files": [
     "lib"
   ],
@@ -18,6 +29,11 @@
     "lint": "eslint --ext .js,.vue .",
     "release": "yarn test && standard-version && git push --follow-tags && npm publish",
     "test": "yarn lint && jest"
+  },
+  "husky": {
+    "gitHooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "dependencies": {
     "@adyen/adyen-web": "5.1.0"
