@@ -32,10 +32,10 @@ const nuxtModule: Module<ModuleOptions> = function (moduleOptions) {
 
 declare module '@nuxt/types' {
   interface NuxtConfig {
-    [CONFIG_KEY]?: ModuleOptions
+    [CONFIG_KEY]: ModuleOptions
   } // Nuxt 2.14+
   interface Configuration {
-    [CONFIG_KEY]?: ModuleOptions
+    [CONFIG_KEY]: ModuleOptions
   } // Nuxt 2.9 - 2.13
 }
 

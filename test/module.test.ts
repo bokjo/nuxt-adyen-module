@@ -16,7 +16,7 @@ describe('module', () => {
   })
 
   test('should have config with Adyen options', () => {
-    const { locale, environment, clientKey } = (getNuxt().options as any).adyen
+    const { locale, environment, clientKey } = getNuxt().options.adyen
 
     expect(locale).toBeDefined()
     expect(environment).toBeDefined()
