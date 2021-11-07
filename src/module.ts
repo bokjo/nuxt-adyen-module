@@ -1,6 +1,7 @@
 import { Module } from '@nuxt/types'
 import { AdyenConfigOptions } from './runtime/api';
 import { AdyenServerApi } from './runtime/server';
+import { createMiddleware } from './runtime/middleware';
 const path = require('path')
 
 export interface ModuleOptions extends AdyenConfigOptions {}
@@ -16,11 +17,10 @@ const nuxtModule: Module<ModuleOptions> = async function (moduleOptions) {
   // if (!options.clientKey) { throw new Error('[nuxt-adyen-module] property clientKey is required') }
   // if (!options.environment) { throw new Error('[nuxt-adyen-module] property environment is required') }
 
-  // const $adyenClient = new AdyenServerApi(options.client);
-
   const runtimeDir = path.resolve(__dirname, 'runtime')
   this.nuxt.options.alias['~adyen'] = runtimeDir
   this.nuxt.options.build.transpile.push(runtimeDir)
+  this.addServerMiddleware(createMiddleware(options.client));
 
   // Add server plugin
   this.addPlugin({
@@ -29,13 +29,18 @@ const nuxtModule: Module<ModuleOptions> = async function (moduleOptions) {
     options: options.client
   })
 
+  // Add client plugin
+  this.addPlugin({
+    src: path.resolve(__dirname, './runtime/plugin.client.mjs'),
+    fileName: 'adyen/plugin.client.js',
+    options
+  })
+
   this.addPlugin({
     src: path.resolve(runtimeDir, 'plugin.mjs'),
     fileName: 'adyen.js',
     options: options.checkout
   })
-
-  // module.exports.$adyenClient = $adyenClient
 }
 
 ;(nuxtModule as any).meta = require('../package.json')

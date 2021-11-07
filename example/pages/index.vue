@@ -33,11 +33,11 @@ export default {
     }
   },
   async fetch({ $adyenClient }) {
-    if (process.server) {
-      const result = await $adyenClient.createPaymentSession();
+    // if (process.server) {
+    //   const result = await $adyenClient.createPaymentSession();
 
-      console.log(result);
-    }
+    //   console.log(result);
+    // }
   },
   methods: {
     logPaymentSubmittedData (e) {
@@ -54,6 +54,7 @@ export default {
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onSubmit (state, dropin) {
+      this.$adyenClient.createPaymentSession();
       dropin.setStatus('loading')
 
       setTimeout(() => {
