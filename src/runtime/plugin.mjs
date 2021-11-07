@@ -1,4 +1,4 @@
-const configuration = <%= JSON.stringify(options, null, 2) %>;
+const configuration = <%= JSON.stringify(options) %>;
 
 export default function (context, inject) {
   inject('adyen', configuration)

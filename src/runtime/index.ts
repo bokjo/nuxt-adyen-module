@@ -1,0 +1,1 @@
+export { AdyenServerApi } from './server';

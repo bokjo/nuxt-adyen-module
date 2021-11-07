@@ -7,6 +7,7 @@
       :on-submit="onSubmit"
       :on-error="onError"
       :on-additional-details="onAdditionalDetails"
+      :on-payment-completed="onPaymentCompleted"
       @payment-submitted="logPaymentSubmittedData"
       @additional-details="logAdditionalDetails"
       @payment-error="logError"
@@ -29,6 +30,13 @@ export default {
     },
     priceMock () {
       return priceMock
+    }
+  },
+  async fetch({ $adyenClient }) {
+    if (process.server) {
+      const result = await $adyenClient.createPaymentSession();
+
+      console.log(result);
     }
   },
   methods: {
@@ -59,6 +67,11 @@ export default {
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onError (state, dropin) {
+      // eslint-disable-next-line no-console
+      console.log(state)
+    },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    onPaymentCompleted (state, dropin) {
       // eslint-disable-next-line no-console
       console.log(state)
     }

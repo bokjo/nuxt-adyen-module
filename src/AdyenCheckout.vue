@@ -18,6 +18,14 @@ export default {
       type: Object,
       required: true
     },
+    paymentMethodsConfiguration: {
+      type: Object,
+      default: () => ({})
+    },
+    configuration: {
+      type: Object,
+      default: () => ({})
+    },
     onSubmit: {
       type: Function,
       required: true
@@ -30,9 +38,9 @@ export default {
       type: Function,
       required: true
     },
-    configuration: {
-      type: Object,
-      default: () => ({})
+    onPaymentCompleted: {
+      type: Function,
+      required: true
     }
   },
   async mounted () {
@@ -47,6 +55,7 @@ export default {
         environment: this.$adyen.environment,
         clientKey: this.$adyen.clientKey,
         paymentMethodsResponse: this.paymentMethodsResponse,
+        paymentMethodsConfiguration: this.paymentMethodsConfiguration,
         amount: {
           value: this.amount,
           currency: this.currency
