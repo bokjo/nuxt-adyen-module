@@ -1,13 +1,14 @@
 <template>
   <div>
     <adyen-checkout
-      :amount="priceMock.amount"
+      :value="priceMock.amount"
       :currency="priceMock.currency"
       :payment-methods-response="paymentMethodsMock"
       :on-submit="onSubmit"
       :on-error="onError"
       :on-additional-details="onAdditionalDetails"
       :on-payment-completed="onPaymentCompleted"
+      :handle-redirect-after-payment="handleRedirectAfterPayment"
       @payment-submitted="logPaymentSubmittedData"
       @additional-details="logAdditionalDetails"
       @payment-error="logError"
@@ -32,13 +33,6 @@ export default {
       return priceMock
     }
   },
-  async fetch({ $adyenClient }) {
-    // if (process.server) {
-    //   const result = await $adyenClient.createPaymentSession();
-
-    //   console.log(result);
-    // }
-  },
   methods: {
     logPaymentSubmittedData (e) {
       // eslint-disable-next-line no-console
@@ -54,7 +48,6 @@ export default {
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onSubmit (state, dropin) {
-      this.$adyenClient.createPaymentSession();
       dropin.setStatus('loading')
 
       setTimeout(() => {
@@ -75,6 +68,23 @@ export default {
     onPaymentCompleted (state, dropin) {
       // eslint-disable-next-line no-console
       console.log(state)
+    },
+    handleRedirectAfterPayment(resultCode) {
+      switch (resultCode) {
+        case "Authorised":
+          window.location.href = "/result/success";
+          break;
+        case "Pending":
+        case "Received":
+          window.location.href = "/result/pending";
+          break;
+        case "Refused":
+          window.location.href = "/result/failed";
+          break;
+        default:
+          window.location.href = "/result/error";
+          break;
+      }
     }
   }
 }

@@ -6,7 +6,7 @@
 export default {
   name: 'AdyenCheckout',
   props: {
-    amount: {
+    value: {
       type: Number,
       required: true
     },
@@ -14,9 +14,13 @@ export default {
       type: String,
       required: true
     },
-    paymentMethodsResponse: {
+    locale: {
+      type: String,
+      default: ''
+    },
+    translations: {
       type: Object,
-      required: true
+      default: () => ({})
     },
     paymentMethodsConfiguration: {
       type: Object,
@@ -28,19 +32,18 @@ export default {
     },
     onSubmit: {
       type: Function,
-      required: true
     },
     onAdditionalDetails: {
       type: Function,
-      required: true
     },
     onError: {
       type: Function,
-      required: true
     },
     onPaymentCompleted: {
       type: Function,
-      required: true
+    },
+    handleRedirectAfterPayment: {
+      type: Function,
     }
   },
   async mounted () {
@@ -48,37 +51,87 @@ export default {
   },
   methods: {
     async initAdyenCheckout () {
-      const { default: AdyenCheckout } = await import('@adyen/adyen-web')
+      try {
+        const { default: AdyenCheckout } = await import('@adyen/adyen-web')
+        const { result: paymentMethodsResponse, clientKey, environment  } = await this.$adyenClient.getPaymentMethods();
+        const { locale, translations, paymentMethodsConfiguration, value, currency } = this;
+        const session = await this.$adyenClient.createPaymentSession({ currency, value });
 
-      const configuration = {
-        locale: this.$adyen.locale,
-        environment: this.$adyen.environment,
-        clientKey: this.$adyen.clientKey,
-        paymentMethodsResponse: this.paymentMethodsResponse,
-        paymentMethodsConfiguration: this.paymentMethodsConfiguration,
-        amount: {
-          value: this.amount,
-          currency: this.currency
-        },
-        onSubmit: async (state, dropin) => {
-          await this.onSubmit(state, dropin)
-          this.$emit('payment-submitted', state)
-        },
-        onAdditionalDetails: async (state, dropin) => {
-          await this.onAdditionalDetails(state, dropin)
-          this.$emit('additional-details', state)
-        },
-        onError: async (state, dropin) => {
-          await this.onError(state, dropin)
-          this.$emit('payment-error', state)
+        const configuration = {
+          locale,
+          translations,
+          environment,
+          clientKey,
+          paymentMethodsResponse,
+          session,
+          paymentMethodsConfiguration,
+          onSubmit: async (state, dropin) => {
+            if (this.onSubmit) {
+              await this.onSubmit(state, dropin)
+            } else {
+              if (state.isValid) {
+                const result = await this.$adyenClient.initiatePayment(state.data);
+                this.handleServerResponse(result, dropin);
+              }
+            }
+            this.$emit('payment-submitted', state)
+          },
+          onAdditionalDetails: async (state, dropin) => {
+            if (this.onAdditionalDetails) {
+              await this.onAdditionalDetails(state, dropin)
+            } else {
+              const result = await this.$adyenClient.submitAdditionalDetails(state.data);
+              this.handleServerResponse(result, dropin);
+            }
+            this.$emit('additional-details', state)
+          },
+          onError: async (state, dropin) => {
+            if (this.onError) {
+              await this.onError(state, dropin)
+            }
+            this.$emit('payment-error', state)
+          },
+          onPaymentCompleted: async (state, dropin) => {
+            if (this.onPaymentCompleted) {
+              await this.onPaymentCompleted(state, dropin)
+            }
+            this.$emit('payment-completed', state);
+          }
+        }
+
+        const checkoutConfiguration = Object.keys(this.configuration).length ? this.configuration : configuration
+
+        const checkout = await new AdyenCheckout(checkoutConfiguration)
+
+        checkout.create('dropin').mount('#adyen-dropin')
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    handleServerResponse(res, component) {
+      if (res.action) {
+        component.handleAction(res.action);
+      } else {
+        if (this.handleRedirectAfterPayment) {
+          this.handleRedirectAfterPayment(res.resultCode);
+        } else {
+          switch (resultCode) {
+            case "Authorised":
+              window.location.href = "/result/success";
+              break;
+            case "Pending":
+            case "Received":
+              window.location.href = "/result/pending";
+              break;
+            case "Refused":
+              window.location.href = "/result/failed";
+              break;
+            default:
+              window.location.href = "/result/error";
+              break;
+          }
         }
       }
-
-      const checkoutConfiguration = Object.keys(this.configuration).length ? this.configuration : configuration
-
-      const checkout = await new AdyenCheckout(checkoutConfiguration)
-
-      checkout.create('dropin').mount('#adyen-dropin')
     }
   }
 }

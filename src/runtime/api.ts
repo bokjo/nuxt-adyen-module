@@ -1,3 +1,5 @@
+import { BrowserInfo } from "@adyen/adyen-web/dist/types/types";
+import { Address } from "@adyen/api-library/lib/src/typings/checkout/address";
 import { CreateCheckoutSessionResponse } from "@adyen/api-library/lib/src/typings/checkout/createCheckoutSessionResponse";
 import { DetailsRequest } from "@adyen/api-library/lib/src/typings/checkout/detailsRequest";
 import { LineItem } from "@adyen/api-library/lib/src/typings/checkout/lineItem";
@@ -12,6 +14,12 @@ export type AdyenCheckoutOptions = {
   clientKey: string;
 };
 
+export enum ChannelEnum {
+  IOs,
+  Android,
+  Web
+}
+
 export type AdyenClientOptions = {
   merchantAccount: string;
   returnUrl: string;
@@ -21,12 +29,13 @@ export type AdyenClientOptions = {
   apiKey: string;
   clientKey: string;
   environment: Environment;
-}
+  channel: ChannelEnum;
+};
 
 export type AdyenConfigOptions = {
   checkout: AdyenCheckoutOptions;
-  client: AdyenClientOptions
-}
+  client: AdyenClientOptions;
+};
 
 export type Environment = "LIVE" | "TEST";
 
@@ -39,15 +48,27 @@ export type InitiatePaymentBody = {
   };
   socialSecurityNumber?: string;
   paymentMethod: PaymentMethod;
-  amount: {
-    currency?: string;
-    value: number;
-  }
+  amount: Amount;
+  billingAddress: Address;
+  browserInfo: BrowserInfo
 };
 
-export interface AdyenCheckoutClient {
-  createPaymentSession(): Promise<CreateCheckoutSessionResponse>;
+export type Amount = {
+  currency: string;
+  value: number;
+};
+
+interface AdyenCheckout {
+  createPaymentSession(amount: Amount): Promise<CreateCheckoutSessionResponse>;
   getPaymentMethods(): Promise<PaymentMethodsResponse>;
   initiatePayment(req: Request): Promise<PaymentResponse>;
-  getPaymentsDetails?(paymentDetailsRequest: DetailsRequest): Promise<PaymentResponse>;
+}
+
+export interface AdyenCheckoutClient extends AdyenCheckout {
+  submitAdditionalDetails(paymentDetailsRequest: DetailsRequest): Promise<PaymentResponse>;
+  handleShopperRedirect(paymentDetailsRequest: DetailsRequest): Promise<void>;
+};
+
+export interface AdyenCheckoutServer extends AdyenCheckout {
+  getPaymentsDetails(paymentDetailsRequest: DetailsRequest): Promise<PaymentResponse>;
 };

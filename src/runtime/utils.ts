@@ -1,6 +1,11 @@
+import { InitiatePaymentBody } from "./api";
+
 const { v4: uuid } = require("uuid");
 
-export const findCurrency = (type: string) => {
+export const createUniqueReference = () => uuid()
+
+export const findCurrency = (initiatePaymentBody: InitiatePaymentBody) => {
+  const type = initiatePaymentBody?.paymentMethod?.type;
   switch (type) {
     case "ach":
       return "USD";
@@ -36,4 +41,35 @@ export const redirectByCode = (res: any, code: any) => {
   }
 }
 
-export const createUniqueReference = () => uuid()
+export const sendRequestToServer = async <RETURN_TYPE>(method: string, url: string, data?: any) => {
+  const result: RETURN_TYPE = await fetch(url, {
+    method: method,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: data ? JSON.stringify(data) : null
+  }).then(res => res.json())
+  .catch(error => ({ error }))
+
+  return result;
+}
+
+export const createPaymentMethod = (initiatePaymentBody: InitiatePaymentBody) => {
+  const isMethodBoleto = initiatePaymentBody?.paymentMethod?.type?.includes("boleto");
+
+  // special handling for boleto
+  return isMethodBoleto ? { type: "boletobancario_santander" } : initiatePaymentBody?.paymentMethod;
+}
+
+export const createBillingAddress = (initiatePaymentBody: InitiatePaymentBody) => {
+  const isBillingUndefined = typeof initiatePaymentBody?.billingAddress === "undefined";
+  const isBillingEmpty = Object.keys(initiatePaymentBody?.billingAddress).length === 0;
+
+  return isBillingUndefined || isBillingEmpty ? undefined : initiatePaymentBody?.billingAddress
+}
+
+export const createCountryCode = (initiatePaymentBody: InitiatePaymentBody) => {
+  const isMethodKlarna = initiatePaymentBody?.paymentMethod?.type?.includes("klarna")
+
+  return isMethodKlarna ? "DE" : undefined
+}

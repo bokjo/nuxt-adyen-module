@@ -1,4 +1,5 @@
 import { PaymentCompletionDetails } from "@adyen/api-library/lib/src/typings/checkout/paymentCompletionDetails";
+import { NotificationRequestItem } from "@adyen/api-library/lib/src/typings/notification/notificationRequestItem";
 import { AdyenClientOptions } from "./api";
 import { AdyenServerApi } from "./server";
 import { redirectByCode } from "./utils";
@@ -14,13 +15,13 @@ export const createMiddleware = (configuration: AdyenClientOptions) => {
   app.get("/api/getPaymentMethods", async (req, res) => {
     const result = await adyenClientAPI.getPaymentMethods();
 
-    res.send({ result, clientKey: configuration.clientKey })
+    res.send({ result, clientKey: configuration.clientKey, environment: configuration.environment });
   });
 
 
   // eslint-disable-next-line
   app.post('/api/createPaymentSession', async (req, res) => {
-    const result = await adyenClientAPI.createPaymentSession();
+    const result = await adyenClientAPI.createPaymentSession(req.body);
 
     res.send(result);
   })
@@ -45,8 +46,8 @@ export const createMiddleware = (configuration: AdyenClientOptions) => {
   });
 
   // eslint-disable-next-line
-  app.all("/api/handleShopperRedirect", async (req, res) => {
-    const redirect = req.method === "GET" ? req.query : req.body;
+  app.post("/api/handleShopperRedirect", async (req, res) => {
+    const redirect = req.body;
     const details: PaymentCompletionDetails = {};
     if (redirect.redirectResult) {
       details.redirectResult = redirect.redirectResult;
@@ -57,6 +58,47 @@ export const createMiddleware = (configuration: AdyenClientOptions) => {
     const response = await adyenClientAPI.getPaymentsDetails({ details });
 
     redirectByCode(res, response.resultCode);
+  });
+
+  // eslint-disable-next-line
+  app.post("/api/webhook/notification", (req, res) => {
+    console.log('Received webhook');
+    // get the notification request from POST body
+    const notificationRequestItems: NotificationRequestItem[] = req.body.notificationItems;
+
+    console.log(notificationRequestItems);
+
+    // notificationRequestItems.forEach(({ NotificationRequestItem }) => {
+    //   console.info("Received webhook notification", NotificationRequestItem);
+    //   // Process the notification based on the eventCode
+    //   if (NotificationRequestItem.eventCode === "CANCEL_OR_REFUND") {
+    //     if (validator.validateHMAC(NotificationRequestItem, process.env.ADYEN_HMAC_KEY)) {
+    //       const payment = findPayment(NotificationRequestItem.pspReference);
+
+    //       if (NotificationRequestItem.success === "true") {
+    //         // update with additionalData.modification.action
+    //         if (
+    //           "modification.action" in NotificationRequestItem.additionalData &&
+    //           "refund" === NotificationRequestItem.additionalData["modification.action"]
+    //         ) {
+    //           payment.status = "Refunded";
+    //         } else {
+    //           payment.status = "Cancelled";
+    //         }
+    //       } else {
+    //         // update with failure
+    //         payment.status = "Refund failed";
+    //       }
+    //     } else {
+    //       console.error("NotificationRequest with invalid HMAC key received");
+    //     }
+    //   } else {
+    //     // do nothing
+    //     console.info("skipping non actionable webhook");
+    //   }
+    // });
+
+    res.send("[accepted]");
   });
 
   return app;

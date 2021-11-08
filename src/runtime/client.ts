@@ -1,63 +1,29 @@
-import { Context } from "@nuxt/types";
-import { AdyenCheckoutClient } from "./api";
+import { CreateCheckoutSessionResponse } from "@adyen/api-library/lib/src/typings/checkout/createCheckoutSessionResponse";
+import { DetailsRequest } from "@adyen/api-library/lib/src/typings/checkout/detailsRequest";
+import { PaymentMethodsResponse } from "@adyen/api-library/lib/src/typings/checkout/paymentMethodsResponse";
+import { AdyenCheckoutClient, Amount } from "./api";
+import { sendRequestToServer } from "./utils";
+import { PaymentResponse } from "@adyen/api-library/lib/src/typings/checkout/paymentResponse";
 
 export class AdyenClientApi implements AdyenCheckoutClient {
-  private readonly _context: Context;
-
-  constructor(context: Context) {
-    this._context = context;
+  async createPaymentSession(amount: Amount): Promise<CreateCheckoutSessionResponse> {
+    return sendRequestToServer<CreateCheckoutSessionResponse>('POST', '/api/createPaymentSession', amount);
   }
 
-  async createPaymentSession() {
-    const result = await fetch('/api/createPaymentSession', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    }).then(res => res.json())
-    .catch(error => ({ error }))
-
-    return result;
+  async getPaymentMethods(): Promise<PaymentMethodsResponse> {
+    return sendRequestToServer<PaymentMethodsResponse>('GET', '/api/getPaymentMethods');
   }
 
-  async getPaymentMethods() {
-    const result = await fetch('/api/getPaymentMethods', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    }).then(res => res.json())
-    .catch(error => ({ error }))
+  async submitAdditionalDetails(paymentDetailsRequest: DetailsRequest): Promise<PaymentResponse> {
+    return sendRequestToServer<PaymentResponse>('POST', '/api/submitAdditionalDetails', paymentDetailsRequest);
+  }
 
-    return result;
+  async handleShopperRedirect(paymentDetailsRequest: DetailsRequest): Promise<void> {
+    sendRequestToServer<void>('POST', '/api/handleShopperRedirect', paymentDetailsRequest);
   }
 
   async initiatePayment() {
     const result = await fetch('/api/initiatePayment', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    }).then(res => res.json())
-    .catch(error => ({ error }))
-
-    return result;
-  }
-
-  async submitAdditionalDetails() {
-    const result = await fetch('/api/submitAdditionalDetails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    }).then(res => res.json())
-    .catch(error => ({ error }))
-
-    return result;
-  }
-
-  async handleShopperRedirect() {
-    const result = await fetch('/api/handleShopperRedirect', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

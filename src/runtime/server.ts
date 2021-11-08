@@ -1,10 +1,12 @@
-import { AdyenCheckoutClient, AdyenClientOptions, InitiatePaymentBody } from "./api";
+import { AdyenCheckoutServer, AdyenClientOptions, Amount, InitiatePaymentBody } from "./api";
 import { CheckoutAPI, Client } from "@adyen/api-library";
 import { DetailsRequest } from "@adyen/api-library/lib/src/typings/checkout/detailsRequest";
 import { PaymentResponse } from "@adyen/api-library/lib/src/typings/checkout/paymentResponse";
-import { createUniqueReference, findCurrency } from "./utils";
+import { createBillingAddress, createCountryCode, createPaymentMethod, createUniqueReference, findCurrency } from "./utils";
+import { CreateCheckoutSessionResponse } from "@adyen/api-library/lib/src/typings/checkout/createCheckoutSessionResponse";
+import { PaymentMethodsResponse } from "@adyen/api-library/lib/src/typings/checkout/paymentMethodsResponse";
 
-export class AdyenServerApi implements AdyenCheckoutClient {
+export class AdyenServerApi implements AdyenCheckoutServer {
   private readonly checkout: CheckoutAPI;
   private _config: AdyenClientOptions;
 
@@ -16,13 +18,13 @@ export class AdyenServerApi implements AdyenCheckoutClient {
     this.checkout = new CheckoutAPI(client);
   }
 
-  async createPaymentSession() {
+  async createPaymentSession(amount: Amount): Promise<CreateCheckoutSessionResponse> {
     try {
       const response = await this.checkout.sessions({
         merchantAccount: this._config.merchantAccount,
         amount: {
-          currency: "EUR",
-          value: 1000
+          currency: amount.currency,
+          value: amount.value
         },
         reference: createUniqueReference(),
         returnUrl: this._config.returnUrl
@@ -35,10 +37,10 @@ export class AdyenServerApi implements AdyenCheckoutClient {
     }
   }
 
-  async getPaymentMethods() {
+  async getPaymentMethods(): Promise<PaymentMethodsResponse> {
     try {
       const response = await this.checkout.paymentMethods({
-        channel: "Web",
+        channel: this._config.channel as any,  // Cannot find the proper type due to Adyen namespace
         merchantAccount: this._config.merchantAccount
       });
 
@@ -62,45 +64,34 @@ export class AdyenServerApi implements AdyenCheckoutClient {
 
   async initiatePayment(req: any): Promise<PaymentResponse> {
     try {
-      const currency = findCurrency(req.body.paymentMethod.type);
       const shopperIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-      const { body } = req;
       const initiatePaymentBody: InitiatePaymentBody = req.body;
+      const currency = findCurrency(initiatePaymentBody);
       const orderRef = createUniqueReference();
-      const shopperReference = createUniqueReference();
 
       const response = await this.checkout.payments({
         amount: { currency, value: initiatePaymentBody.amount.value },
         reference: orderRef, // required
         merchantAccount: this._config.merchantAccount,
-        channel: "Web",
+        channel: this._config.channel as any, // Cannot find the proper type due to Adyen namespace
         additionalData: {
           allow3DS2: true as any // Wrong Adyen typing. Each property of additionalData has to be string, while some properties require boolean values.
         },
         origin: this._config.origin, // required for 3ds2 native flow
-        browserInfo: body.browserInfo, // required for 3ds2
+        browserInfo: initiatePaymentBody.browserInfo as any, // required for 3ds2 | Issues with Adyen typing
         shopperIP, // required by some issuers for 3ds2
-        returnUrl: `http://localhost:8080/api/handleShopperRedirect?orderRef=${orderRef}`, // required for 3ds2 redirect flow
-        // special handling for boleto
-        paymentMethod: initiatePaymentBody.paymentMethod.type.includes("boleto")
-          ? {
-              type: "boletobancario_santander"
-            }
-          :body.paymentMethod,
+        returnUrl: `${this._config.returnUrl}?orderRef=${orderRef}`, // required for 3ds2 redirect flow
+        paymentMethod: createPaymentMethod(initiatePaymentBody) as any, // Issues with Adyen typing
         // Below fields are required for Boleto:
         socialSecurityNumber: initiatePaymentBody.socialSecurityNumber,
         shopperName: initiatePaymentBody.shopper?.name,
-        billingAddress:
-          typeof body.billingAddress === "undefined" ||
-          Object.keys(body.billingAddress).length === 0
-            ? null
-            : body.billingAddress,
+        billingAddress: createBillingAddress(initiatePaymentBody),
         deliveryDate: new Date(),
         shopperStatement: "Test Statement",
         // Below fields are required for Klarna:
-        countryCode: body.paymentMethod.type.includes("klarna") ? "DE" : undefined,
-        shopperReference,
-        shopperEmail: "youremail@email.com",
+        countryCode: createCountryCode(initiatePaymentBody),
+        shopperReference: createUniqueReference(),
+        shopperEmail: initiatePaymentBody.shopper?.email,
         shopperLocale: this._config.locale,
         lineItems: initiatePaymentBody.lineItems,
       });
