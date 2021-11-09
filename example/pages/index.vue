@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import AdyenCheckout from '../../src/AdyenCheckout.vue'
+import AdyenCheckout from '../../src/runtime/AdyenCheckout.vue'
 import paymentMethodsMock from '../mocks/paymentMethodsMock.json'
 import { priceMock } from '../mocks/priceMock'
 

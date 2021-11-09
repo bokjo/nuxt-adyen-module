@@ -24,6 +24,7 @@ export type AdyenConfigOptions = {
   clientKey: string;
   environment: Environment;
   channel: ChannelEnum;
+  registerCheckoutComponent?: boolean;
 };
 
 export type Environment = "LIVE" | "TEST";

@@ -31,6 +31,7 @@ const nuxtModule: Module<ModuleOptions> = async function (moduleOptions) {
   this.addPlugin({
     src: path.resolve(runtimeDir, 'plugin.mjs'),
     fileName: 'adyen.js',
+    options: { registerCheckoutComponent: options.registerCheckoutComponent }
   })
 }
 
