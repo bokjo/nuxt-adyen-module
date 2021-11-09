@@ -22,6 +22,10 @@ export default {
       type: Object,
       default: () => ({})
     },
+    implementedPaymentMethods: {
+      type: Array,
+      default: () => ([])
+    },
     paymentMethodsConfiguration: {
       type: Object,
       default: () => ({})
@@ -52,17 +56,18 @@ export default {
   methods: {
     async initAdyenCheckout () {
       try {
-        const { default: AdyenCheckout } = await import('@adyen/adyen-web')
-        const { result: paymentMethodsResponse, clientKey, environment  } = await this.$adyenClient.getPaymentMethods();
         const { locale, translations, paymentMethodsConfiguration, value, currency } = this;
-        const session = await this.$adyenClient.createPaymentSession({ currency, value });
+
+        const { default: AdyenCheckout } = await import('@adyen/adyen-web')
+        const { result: paymentMethodsResponse, clientKey, environment  } = await this.$adyen.getPaymentMethods();
+        const session = await this.$adyen.createPaymentSession({ currency, value });
 
         const configuration = {
           locale,
           translations,
           environment,
           clientKey,
-          paymentMethodsResponse,
+          paymentMethodsResponse: this.filterUnimplemented(paymentMethodsResponse),
           session,
           paymentMethodsConfiguration,
           onSubmit: async (state, dropin) => {
@@ -70,7 +75,7 @@ export default {
               await this.onSubmit(state, dropin)
             } else {
               if (state.isValid) {
-                const result = await this.$adyenClient.initiatePayment(state.data);
+                const result = await this.$adyen.initiatePayment(state.data);
                 this.handleServerResponse(result, dropin);
               }
             }
@@ -80,7 +85,7 @@ export default {
             if (this.onAdditionalDetails) {
               await this.onAdditionalDetails(state, dropin)
             } else {
-              const result = await this.$adyenClient.submitAdditionalDetails(state.data);
+              const result = await this.$adyen.submitAdditionalDetails(state.data);
               this.handleServerResponse(result, dropin);
             }
             this.$emit('additional-details', state)
@@ -132,6 +137,13 @@ export default {
           }
         }
       }
+    },
+    filterUnimplemented(pm) {
+      if (this.implementedPaymentMethods.length) {
+        pm.paymentMethods = pm.paymentMethods.filter((it) => this.implementedPaymentMethods.includes(it.type));
+      }
+
+      return pm;
     }
   }
 }

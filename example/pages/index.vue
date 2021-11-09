@@ -3,7 +3,7 @@
     <adyen-checkout
       :value="priceMock.amount"
       :currency="priceMock.currency"
-      :payment-methods-response="paymentMethodsMock"
+      :implementedPaymentMethods="implementedPaymentMethods"
       :on-submit="onSubmit"
       :on-error="onError"
       :on-additional-details="onAdditionalDetails"
@@ -24,6 +24,25 @@ import { priceMock } from '../mocks/priceMock'
 export default {
   components: {
     AdyenCheckout
+  },
+  data() {
+    return {
+      implementedPaymentMethods:
+      [
+        "scheme",
+        "ideal",
+        "dotpay",
+        "giropay",
+        "sepadirectdebit",
+        "directEbanking",
+        "ach",
+        "alipay",
+        "klarna_paynow",
+        "klarna",
+        "klarna_account",
+        "boletobancario_santander",
+      ]
+    }
   },
   computed: {
     paymentMethodsMock () {

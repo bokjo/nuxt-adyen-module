@@ -1,18 +1,18 @@
 import { PaymentCompletionDetails } from "@adyen/api-library/lib/src/typings/checkout/paymentCompletionDetails";
 import { NotificationRequestItem } from "@adyen/api-library/lib/src/typings/notification/notificationRequestItem";
-import { AdyenClientOptions } from "./api";
+import { AdyenConfigOptions } from "./api";
 import { AdyenServerApi } from "./server";
 import { redirectByCode } from "./utils";
 
 const bodyParser = require('body-parser');
 const app = require('express')();
 
-export const createMiddleware = (configuration: AdyenClientOptions) => {
+export const createMiddleware = (configuration: AdyenConfigOptions) => {
   const adyenClientAPI = new AdyenServerApi(configuration);
   app.use(bodyParser.json());
 
   // eslint-disable-next-line
-  app.get("/api/getPaymentMethods", async (req, res) => {
+  app.get("/api/getPaymentMethods", async (req: any, res: any) => {
     const result = await adyenClientAPI.getPaymentMethods();
 
     res.send({ result, clientKey: configuration.clientKey, environment: configuration.environment });
@@ -20,21 +20,21 @@ export const createMiddleware = (configuration: AdyenClientOptions) => {
 
 
   // eslint-disable-next-line
-  app.post('/api/createPaymentSession', async (req, res) => {
+  app.post('/api/createPaymentSession', async (req: any, res: any) => {
     const result = await adyenClientAPI.createPaymentSession(req.body);
 
     res.send(result);
   })
 
   // eslint-disable-next-line
-  app.post("/api/initiatePayment", async (req, res) => {
+  app.post("/api/initiatePayment", async (req: any, res: any) => {
     const result = await adyenClientAPI.initiatePayment(req);
 
     res.send(result);
   });
 
   // eslint-disable-next-line
-  app.post("/api/submitAdditionalDetails", async (req, res) => {
+  app.post("/api/submitAdditionalDetails", async (req: any, res: any) => {
     const payload = {
       details: req.body.details,
       paymentData: req.body.paymentData
@@ -46,7 +46,7 @@ export const createMiddleware = (configuration: AdyenClientOptions) => {
   });
 
   // eslint-disable-next-line
-  app.post("/api/handleShopperRedirect", async (req, res) => {
+  app.post("/api/handleShopperRedirect", async (req: any, res: any) => {
     const redirect = req.body;
     const details: PaymentCompletionDetails = {};
     if (redirect.redirectResult) {
@@ -61,7 +61,8 @@ export const createMiddleware = (configuration: AdyenClientOptions) => {
   });
 
   // eslint-disable-next-line
-  app.post("/api/webhook/notification", (req, res) => {
+  app.post("/api/webhook/notification", (req: any, res: any) => {
+    // TODO: finish developing this webhook
     console.log('Received webhook');
     // get the notification request from POST body
     const notificationRequestItems: NotificationRequestItem[] = req.body.notificationItems;

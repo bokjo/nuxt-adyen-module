@@ -1,6 +1,8 @@
-const configuration = <%= JSON.stringify(options) %>;
+import { AdyenClientApi } from '~adyen/client'
 
 export default function (context, inject) {
-  inject('adyen', configuration)
-  context.app.adyen = configuration
+  const adyenClientAPI = new AdyenClientApi();
+
+  inject('adyen', adyenClientAPI)
+  context.app.adyen = adyenClientAPI
 }

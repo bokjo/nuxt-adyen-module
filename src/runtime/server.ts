@@ -1,16 +1,16 @@
-import { AdyenCheckoutServer, AdyenClientOptions, Amount, InitiatePaymentBody } from "./api";
 import { CheckoutAPI, Client } from "@adyen/api-library";
 import { DetailsRequest } from "@adyen/api-library/lib/src/typings/checkout/detailsRequest";
 import { PaymentResponse } from "@adyen/api-library/lib/src/typings/checkout/paymentResponse";
-import { createBillingAddress, createCountryCode, createPaymentMethod, createUniqueReference, findCurrency } from "./utils";
 import { CreateCheckoutSessionResponse } from "@adyen/api-library/lib/src/typings/checkout/createCheckoutSessionResponse";
 import { PaymentMethodsResponse } from "@adyen/api-library/lib/src/typings/checkout/paymentMethodsResponse";
+import { AdyenCheckoutServer, AdyenConfigOptions, Amount, InitiatePaymentBody } from "./api";
+import { createBillingAddress, createCountryCode, createPaymentMethod, createUniqueReference, findCurrency } from "./utils";
 
 export class AdyenServerApi implements AdyenCheckoutServer {
   private readonly checkout: CheckoutAPI;
-  private _config: AdyenClientOptions;
+  private _config: AdyenConfigOptions;
 
-  constructor(config: AdyenClientOptions) {
+  constructor(config: AdyenConfigOptions) {
     this._config = config;
 
     const client = new Client(config);
@@ -62,6 +62,7 @@ export class AdyenServerApi implements AdyenCheckoutServer {
     }
   }
 
+  // eslint-disable-next-line
   async initiatePayment(req: any): Promise<PaymentResponse> {
     try {
       const shopperIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
@@ -87,12 +88,12 @@ export class AdyenServerApi implements AdyenCheckoutServer {
         shopperName: initiatePaymentBody.shopper?.name,
         billingAddress: createBillingAddress(initiatePaymentBody),
         deliveryDate: new Date(),
-        shopperStatement: "Test Statement",
+        shopperStatement: `Payment statement for order ${orderRef}`,
         // Below fields are required for Klarna:
         countryCode: createCountryCode(initiatePaymentBody),
         shopperReference: createUniqueReference(),
         shopperEmail: initiatePaymentBody.shopper?.email,
-        shopperLocale: this._config.locale,
+        shopperLocale: initiatePaymentBody?.shopper?.locale,
         lineItems: initiatePaymentBody.lineItems,
       });
       return response;

@@ -8,19 +8,13 @@ import { PaymentMethod } from "@adyen/api-library/lib/src/typings/checkout/payme
 import { PaymentMethodsResponse } from "@adyen/api-library/lib/src/typings/checkout/paymentMethodsResponse";
 import { PaymentResponse } from "@adyen/api-library/lib/src/typings/checkout/paymentResponse";
 
-export type AdyenCheckoutOptions = {
-  locale: string;
-  environment: string;
-  clientKey: string;
-};
-
 export enum ChannelEnum {
   IOs,
   Android,
   Web
 }
 
-export type AdyenClientOptions = {
+export type AdyenConfigOptions = {
   merchantAccount: string;
   returnUrl: string;
   origin: string;
@@ -30,11 +24,6 @@ export type AdyenClientOptions = {
   clientKey: string;
   environment: Environment;
   channel: ChannelEnum;
-};
-
-export type AdyenConfigOptions = {
-  checkout: AdyenCheckoutOptions;
-  client: AdyenClientOptions;
 };
 
 export type Environment = "LIVE" | "TEST";
@@ -50,7 +39,7 @@ export type InitiatePaymentBody = {
   paymentMethod: PaymentMethod;
   amount: Amount;
   billingAddress: Address;
-  browserInfo: BrowserInfo
+  browserInfo: BrowserInfo;
 };
 
 export type Amount = {
