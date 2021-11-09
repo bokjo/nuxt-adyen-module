@@ -17,7 +17,6 @@
 
 <script>
 import AdyenCheckout from '../../src/runtime/AdyenCheckout.vue'
-import paymentMethodsMock from '../mocks/paymentMethodsMock.json'
 import { priceMock } from '../mocks/priceMock'
 
 export default {
@@ -45,9 +44,6 @@ export default {
     }
   },
   computed: {
-    paymentMethodsMock () {
-      return paymentMethodsMock
-    },
     priceMock () {
       return priceMock
     }
