@@ -35,19 +35,19 @@ export default {
       default: () => ({})
     },
     onSubmit: {
-      type: Function,
+      type: Function
     },
     onAdditionalDetails: {
-      type: Function,
+      type: Function
     },
     onError: {
-      type: Function,
+      type: Function
     },
     onPaymentCompleted: {
-      type: Function,
+      type: Function
     },
     handleRedirectAfterPayment: {
-      type: Function,
+      type: Function
     }
   },
   async mounted () {
@@ -56,11 +56,11 @@ export default {
   methods: {
     async initAdyenCheckout () {
       try {
-        const { locale, translations, paymentMethodsConfiguration, value, currency } = this;
+        const { locale, translations, paymentMethodsConfiguration, value, currency } = this
 
         const { default: AdyenCheckout } = await import('@adyen/adyen-web')
-        const { result: paymentMethodsResponse, clientKey, environment  } = await this.$adyen.getPaymentMethods();
-        const session = await this.$adyen.createPaymentSession({ currency, value });
+        const { result: paymentMethodsResponse, clientKey, environment } = await this.$adyen.getPaymentMethods()
+        const session = await this.$adyen.createPaymentSession({ currency, value })
 
         const configuration = {
           locale,
@@ -73,15 +73,13 @@ export default {
           onSubmit: async (state, dropin) => {
             if (this.onSubmit) {
               await this.onSubmit(state, dropin)
-            } else {
-              if (state.isValid) {
-                // TODO: Debug issue with amount not being set after submiting payment.
-                // Setting session and card configuration with value and currency did not work :(
-                const initiatePaymentBody = { ...state.data, amount: { value, currency } }
+            } else if (state.isValid) {
+              // TODO: Debug issue with amount not being set after submiting payment.
+              // Setting session and card configuration with value and currency did not work :(
+              const initiatePaymentBody = { ...state.data, amount: { value, currency } }
 
-                const result = await this.$adyen.initiatePayment(initiatePaymentBody);
-                this.handleServerResponse(result, dropin);
-              }
+              const result = await this.$adyen.initiatePayment(initiatePaymentBody)
+              this.handleServerResponse(result, dropin)
             }
             this.$emit('payment-submitted', state)
           },
@@ -89,8 +87,8 @@ export default {
             if (this.onAdditionalDetails) {
               await this.onAdditionalDetails(state, dropin)
             } else {
-              const result = await this.$adyen.submitAdditionalDetails(state.data);
-              this.handleServerResponse(result, dropin);
+              const result = await this.$adyen.submitAdditionalDetails(state.data)
+              this.handleServerResponse(result, dropin)
             }
             this.$emit('additional-details', state)
           },
@@ -104,7 +102,7 @@ export default {
             if (this.onPaymentCompleted) {
               await this.onPaymentCompleted(state, dropin)
             }
-            this.$emit('payment-completed', state);
+            this.$emit('payment-completed', state)
           }
         }
 
@@ -114,35 +112,33 @@ export default {
 
         checkout.create('dropin').mount('#adyen-dropin')
       } catch (error) {
-        console.error(error);
+        console.error(error)
       }
     },
-    handleServerResponse(res, component) {
+    handleServerResponse (res, component) {
       if (res.action) {
-        component.handleAction(res.action);
-      } else {
-        if (this.handleRedirectAfterPayment) {
-          this.handleRedirectAfterPayment(res.resultCode);
-        }
+        component.handleAction(res.action)
+      } else if (this.handleRedirectAfterPayment) {
+        this.handleRedirectAfterPayment(res.resultCode)
       }
     },
-    filterUnimplemented(pm) {
+    filterUnimplemented (pm) {
       if (this.implementedPaymentMethods.length) {
-        pm.paymentMethods = pm.paymentMethods.filter((it) => this.implementedPaymentMethods.includes(it.type));
+        pm.paymentMethods = pm.paymentMethods.filter(it => this.implementedPaymentMethods.includes(it.type))
       }
 
-      return pm;
+      return pm
     },
-    createPaymentMethodsConfiguration(paymentMethodsConfiguration) {
+    createPaymentMethodsConfiguration (paymentMethodsConfiguration) {
       if (Object.keys(paymentMethodsConfiguration).length) {
-        return paymentMethodsConfiguration;
+        return paymentMethodsConfiguration
       } else {
         return {
           card: {
             hasHolderName: true,
-            holderNameRequired: true,
+            holderNameRequired: true
           }
-        };
+        }
       }
     }
   }

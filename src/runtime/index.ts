@@ -1,2 +1,2 @@
-export { AdyenServerApi } from './server';
-export { AdyenClientApi } from './client';
+export { AdyenServerApi } from './server'
+export { AdyenClientApi } from './client'

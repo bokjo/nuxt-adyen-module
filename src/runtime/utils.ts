@@ -1,75 +1,75 @@
-import { InitiatePaymentBody } from "./api";
+import { InitiatePaymentBody } from './api'
 
-const { v4: uuid } = require("uuid");
+const { v4: uuid } = require('uuid')
 
 export const createUniqueReference = () => uuid()
 
 export const findCurrency = (initiatePaymentBody: InitiatePaymentBody) => {
-  const type = initiatePaymentBody?.paymentMethod?.type;
+  const type = initiatePaymentBody?.paymentMethod?.type
   switch (type) {
-    case "ach":
-      return "USD";
-    case "wechatpayqr":
-    case "alipay":
-      return "CNY";
-    case "dotpay":
-      return "PLN";
-    case "boletobancario":
-    case "boletobancario_santander":
-      return "BRL";
+    case 'ach':
+      return 'USD'
+    case 'wechatpayqr':
+    case 'alipay':
+      return 'CNY'
+    case 'dotpay':
+      return 'PLN'
+    case 'boletobancario':
+    case 'boletobancario_santander':
+      return 'BRL'
     default:
-      return "EUR";
+      return 'EUR'
   }
 }
 
 // eslint-disable-next-line
 export const redirectByCode = (res: any, code: any) => {
   switch (code) {
-    case "Authorised":
-      res.redirect("/result/success");
-      break;
-    case "Pending":
-    case "Received":
-      res.redirect("/result/pending");
-      break;
-    case "Refused":
-      res.redirect("/result/failed");
-      break;
+    case 'Authorised':
+      res.redirect('/result/success')
+      break
+    case 'Pending':
+    case 'Received':
+      res.redirect('/result/pending')
+      break
+    case 'Refused':
+      res.redirect('/result/failed')
+      break
     default:
-      res.redirect("/result/error");
-      break;
+      res.redirect('/result/error')
+      break
   }
 }
 
 export const sendRequestToServer = async <RETURN_TYPE>(method: string, url: string, data?: any) => {
   const result: RETURN_TYPE = await fetch(url, {
-    method: method,
+    method,
     headers: {
       'Content-Type': 'application/json'
     },
     body: data ? JSON.stringify(data) : null
   }).then(res => res.json())
-  .catch(error => ({ error }))
+    .catch(error => ({ error }))
 
-  return result;
+  return result
 }
 
 export const createPaymentMethod = (initiatePaymentBody: InitiatePaymentBody) => {
-  const isMethodBoleto = initiatePaymentBody?.paymentMethod?.type?.includes("boleto");
+  const isMethodBoleto = initiatePaymentBody?.paymentMethod?.type?.includes('boleto')
 
   // special handling for boleto
-  return isMethodBoleto ? { type: "boletobancario_santander" } : initiatePaymentBody?.paymentMethod;
+  return isMethodBoleto ? { type: 'boletobancario_santander' } : initiatePaymentBody?.paymentMethod
 }
 
 export const createBillingAddress = (initiatePaymentBody: InitiatePaymentBody) => {
-  const isBillingUndefined = typeof initiatePaymentBody?.billingAddress === "undefined";
-  const isBillingEmpty = !isBillingUndefined ? Object.keys(initiatePaymentBody?.billingAddress).length === 0 : undefined;
+  const isBillingUndefined = typeof initiatePaymentBody?.billingAddress === 'undefined'
+  const isBillingEmpty = !isBillingUndefined ? Object.keys(initiatePaymentBody?.billingAddress).length === 0 : undefined
 
   return isBillingUndefined || isBillingEmpty ? undefined : initiatePaymentBody?.billingAddress
 }
 
 export const createCountryCode = (initiatePaymentBody: InitiatePaymentBody) => {
-  const isMethodKlarna = initiatePaymentBody?.paymentMethod?.type?.includes("klarna")
+  const isMethodKlarna = initiatePaymentBody?.paymentMethod?.type?.includes('klarna')
 
-  return isMethodKlarna ? "DE" : undefined
+  return isMethodKlarna ? 'DE' : undefined
 }

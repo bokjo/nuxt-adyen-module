@@ -1,24 +1,24 @@
-import { CheckoutAPI, Client } from "@adyen/api-library";
-import { DetailsRequest } from "@adyen/api-library/lib/src/typings/checkout/detailsRequest";
-import { PaymentResponse } from "@adyen/api-library/lib/src/typings/checkout/paymentResponse";
-import { CreateCheckoutSessionResponse } from "@adyen/api-library/lib/src/typings/checkout/createCheckoutSessionResponse";
-import { PaymentMethodsResponse } from "@adyen/api-library/lib/src/typings/checkout/paymentMethodsResponse";
-import { AdyenCheckoutServer, AdyenConfigOptions, Amount, InitiatePaymentBody } from "./api";
-import { createBillingAddress, createCountryCode, createPaymentMethod, createUniqueReference, findCurrency } from "./utils";
+import { CheckoutAPI, Client } from '@adyen/api-library'
+import { DetailsRequest } from '@adyen/api-library/lib/src/typings/checkout/detailsRequest'
+import { PaymentResponse } from '@adyen/api-library/lib/src/typings/checkout/paymentResponse'
+import { CreateCheckoutSessionResponse } from '@adyen/api-library/lib/src/typings/checkout/createCheckoutSessionResponse'
+import { PaymentMethodsResponse } from '@adyen/api-library/lib/src/typings/checkout/paymentMethodsResponse'
+import { AdyenCheckoutServer, AdyenConfigOptions, Amount, InitiatePaymentBody } from './api'
+import { createBillingAddress, createCountryCode, createPaymentMethod, createUniqueReference, findCurrency } from './utils'
 
 export class AdyenServerApi implements AdyenCheckoutServer {
-  private readonly checkout: CheckoutAPI;
-  private _config: AdyenConfigOptions;
+  private readonly checkout: CheckoutAPI
+  private _config: AdyenConfigOptions
 
-  constructor(config: AdyenConfigOptions) {
-    this._config = config;
+  constructor (config: AdyenConfigOptions) {
+    this._config = config
 
-    const client = new Client(config);
+    const client = new Client(config)
 
-    this.checkout = new CheckoutAPI(client);
+    this.checkout = new CheckoutAPI(client)
   }
 
-  async createPaymentSession({ currency, value }: Amount): Promise<CreateCheckoutSessionResponse> {
+  async createPaymentSession ({ currency, value }: Amount): Promise<CreateCheckoutSessionResponse> {
     try {
       const response = await this.checkout.sessions({
         merchantAccount: this._config.merchantAccount,
@@ -30,45 +30,45 @@ export class AdyenServerApi implements AdyenCheckoutServer {
         returnUrl: this._config.returnUrl
       })
 
-      return response;
+      return response
     } catch (err: any) {
-      console.error(`Error: ${err.message}, error code: ${err.errorCode}`);
-      throw new Error(err);
+      console.error(`Error: ${err.message}, error code: ${err.errorCode}`)
+      throw new Error(err)
     }
   }
 
-  async getPaymentMethods(): Promise<PaymentMethodsResponse> {
+  async getPaymentMethods (): Promise<PaymentMethodsResponse> {
     try {
       const response = await this.checkout.paymentMethods({
-        channel: this._config.channel as any,  // Cannot find the proper type due to Adyen namespace
+        channel: this._config.channel as any, // Cannot find the proper type due to Adyen namespace
         merchantAccount: this._config.merchantAccount
-      });
+      })
 
-      return response;
+      return response
     } catch (err: any) {
-      console.error(`Error: ${err.message}, error code: ${err.errorCode}`);
-      throw new Error(err);
+      console.error(`Error: ${err.message}, error code: ${err.errorCode}`)
+      throw new Error(err)
     }
   }
 
-  async getPaymentsDetails(paymentDetailsRequest: DetailsRequest) {
+  async getPaymentsDetails (paymentDetailsRequest: DetailsRequest) {
     try {
-      const response = await this.checkout.paymentsDetails(paymentDetailsRequest);
+      const response = await this.checkout.paymentsDetails(paymentDetailsRequest)
 
-      return response;
+      return response
     } catch (err: any) {
-      console.error(`Error: ${err.message}, error code: ${err.errorCode}`);
-      throw new Error(err);
+      console.error(`Error: ${err.message}, error code: ${err.errorCode}`)
+      throw new Error(err)
     }
   }
 
   // eslint-disable-next-line
   async initiatePayment(req: any): Promise<PaymentResponse> {
     try {
-      const shopperIP = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-      const initiatePaymentBody: InitiatePaymentBody = req.body;
-      const currency = findCurrency(initiatePaymentBody);
-      const orderRef = createUniqueReference();
+      const shopperIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress
+      const initiatePaymentBody: InitiatePaymentBody = req.body
+      const currency = findCurrency(initiatePaymentBody)
+      const orderRef = createUniqueReference()
 
       const response = await this.checkout.payments({
         // TODO: issue with no amount
@@ -95,12 +95,12 @@ export class AdyenServerApi implements AdyenCheckoutServer {
         shopperReference: createUniqueReference(),
         shopperEmail: initiatePaymentBody.shopper?.email,
         shopperLocale: initiatePaymentBody?.shopper?.locale,
-        lineItems: initiatePaymentBody.lineItems,
-      });
-      return response;
+        lineItems: initiatePaymentBody.lineItems
+      })
+      return response
     } catch (err: any) {
-      console.error(`Error: ${err.message}, error code: ${err.errorCode}`);
-      throw new Error(err);
+      console.error(`Error: ${err.message}, error code: ${err.errorCode}`)
+      throw new Error(err)
     }
   }
 }

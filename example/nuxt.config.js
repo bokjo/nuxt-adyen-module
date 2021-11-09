@@ -1,6 +1,6 @@
 export default {
   server: {
-    port: 8080,
+    port: 8080
   },
   buildModules: ['@nuxt/typescript-build'],
   modules: ['../src/module.ts'],

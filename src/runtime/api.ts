@@ -1,19 +1,26 @@
-import { BrowserInfo } from "@adyen/adyen-web/dist/types/types";
-import { Address } from "@adyen/api-library/lib/src/typings/checkout/address";
-import { CreateCheckoutSessionResponse } from "@adyen/api-library/lib/src/typings/checkout/createCheckoutSessionResponse";
-import { DetailsRequest } from "@adyen/api-library/lib/src/typings/checkout/detailsRequest";
-import { LineItem } from "@adyen/api-library/lib/src/typings/checkout/lineItem";
-import { Name } from "@adyen/api-library/lib/src/typings/checkout/name";
-import { PaymentMethod } from "@adyen/api-library/lib/src/typings/checkout/paymentMethod";
-import { PaymentMethodsResponse } from "@adyen/api-library/lib/src/typings/checkout/paymentMethodsResponse";
-import { PaymentResponse } from "@adyen/api-library/lib/src/typings/checkout/paymentResponse";
-import { RiskData } from "@adyen/api-library/lib/src/typings/checkout/riskData";
+import { BrowserInfo } from '@adyen/adyen-web/dist/types/types'
+import { Address } from '@adyen/api-library/lib/src/typings/checkout/address'
+import { CreateCheckoutSessionResponse } from '@adyen/api-library/lib/src/typings/checkout/createCheckoutSessionResponse'
+import { DetailsRequest } from '@adyen/api-library/lib/src/typings/checkout/detailsRequest'
+import { LineItem } from '@adyen/api-library/lib/src/typings/checkout/lineItem'
+import { Name } from '@adyen/api-library/lib/src/typings/checkout/name'
+import { PaymentMethod } from '@adyen/api-library/lib/src/typings/checkout/paymentMethod'
+import { PaymentMethodsResponse } from '@adyen/api-library/lib/src/typings/checkout/paymentMethodsResponse'
+import { PaymentResponse } from '@adyen/api-library/lib/src/typings/checkout/paymentResponse'
+import { RiskData } from '@adyen/api-library/lib/src/typings/checkout/riskData'
 
 export enum ChannelEnum {
   IOs,
   Android,
   Web
 }
+
+export type Environment = 'LIVE' | 'TEST';
+
+export type Amount = {
+  currency: string;
+  value: number;
+};
 
 export type AdyenConfigOptions = {
   merchantAccount: string;
@@ -26,8 +33,6 @@ export type AdyenConfigOptions = {
   channel: ChannelEnum;
   registerCheckoutComponent?: boolean;
 };
-
-export type Environment = "LIVE" | "TEST";
 
 export type InitiatePaymentBody = {
   riskData: RiskData;
@@ -44,11 +49,6 @@ export type InitiatePaymentBody = {
   amount: Amount;
   billingAddress: Address;
   browserInfo: BrowserInfo;
-};
-
-export type Amount = {
-  currency: string;
-  value: number;
 };
 
 interface AdyenCheckout {

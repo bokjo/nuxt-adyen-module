@@ -4,7 +4,7 @@
       :value="priceMock.amount"
       :currency="priceMock.currency"
       :locale="locale"
-      :implementedPaymentMethods="implementedPaymentMethods"
+      :implemented-payment-methods="implementedPaymentMethods"
       :on-additional-details="onAdditionalDetails"
       :on-payment-completed="onPaymentCompleted"
       :handle-redirect-after-payment="handleRedirectAfterPayment"
@@ -23,22 +23,22 @@ export default {
   components: {
     AdyenCheckout
   },
-  data() {
+  data () {
     return {
       implementedPaymentMethods:
       [
-        "scheme",
-        "ideal",
-        "dotpay",
-        "giropay",
-        "sepadirectdebit",
-        "directEbanking",
-        "ach",
-        "alipay",
-        "klarna_paynow",
-        "klarna",
-        "klarna_account",
-        "boletobancario_santander",
+        'scheme',
+        'ideal',
+        'dotpay',
+        'giropay',
+        'sepadirectdebit',
+        'directEbanking',
+        'ach',
+        'alipay',
+        'klarna_paynow',
+        'klarna',
+        'klarna_account',
+        'boletobancario_santander'
       ],
       locale: 'en_US'
     }
@@ -84,21 +84,21 @@ export default {
       // eslint-disable-next-line no-console
       console.log(state)
     },
-    handleRedirectAfterPayment(resultCode) {
+    handleRedirectAfterPayment (resultCode) {
       switch (resultCode) {
-        case "Authorised":
-          window.location.href = "/result/success";
-          break;
-        case "Pending":
-        case "Received":
-          window.location.href = "/result/pending";
-          break;
-        case "Refused":
-          window.location.href = "/result/failed";
-          break;
+        case 'Authorised':
+          window.location.href = '/result/success'
+          break
+        case 'Pending':
+        case 'Received':
+          window.location.href = '/result/pending'
+          break
+        case 'Refused':
+          window.location.href = '/result/failed'
+          break
         default:
-          window.location.href = "/result/error";
-          break;
+          window.location.href = '/result/error'
+          break
       }
     }
   }

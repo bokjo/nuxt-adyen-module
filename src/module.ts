@@ -1,14 +1,14 @@
 import { Module } from '@nuxt/types'
-import { AdyenConfigOptions } from './runtime/api';
-import { createMiddleware } from './runtime/middleware';
-import { AdyenClientApi } from './runtime';
+import { AdyenConfigOptions } from './runtime/api'
+import { createMiddleware } from './runtime/middleware'
+import { AdyenClientApi } from './runtime'
 const path = require('path')
 
 export interface ModuleOptions extends AdyenConfigOptions {}
 
 const CONFIG_KEY = 'adyen'
 
-const nuxtModule: Module<ModuleOptions> = async function (moduleOptions) {
+const nuxtModule: Module<ModuleOptions> = function (moduleOptions) {
   const options = {
     ...this.options.adyen,
     ...moduleOptions
@@ -26,7 +26,7 @@ const nuxtModule: Module<ModuleOptions> = async function (moduleOptions) {
   const runtimeDir = path.resolve(__dirname, 'runtime')
   this.nuxt.options.alias['~adyen'] = runtimeDir
   this.nuxt.options.build.transpile.push(runtimeDir)
-  this.addServerMiddleware(createMiddleware(options));
+  this.addServerMiddleware(createMiddleware(options))
 
   this.addPlugin({
     src: path.resolve(runtimeDir, 'plugin.mjs'),
