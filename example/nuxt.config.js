@@ -12,7 +12,7 @@ export default {
     apiKey: process.env.ADYEN_API_KEY,
     environment: process.env.ADYEN_ENVIRONMENT,
     origin: process.env.ADYEN_ORIGIN_URL,
-    locale: process.env.ADYEN_LOCALE,
+    channel: process.env.ADYEN_CHANNEL,
     clientKey: process.env.ADYEN_CLIENT_KEY
   }
 }
