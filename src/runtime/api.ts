@@ -18,7 +18,6 @@ export type AdyenConfigOptions = {
   merchantAccount: string;
   returnUrl: string;
   origin: string;
-  locale: string;
   checkoutEndpoint: string;
   apiKey: string;
   clientKey: string;

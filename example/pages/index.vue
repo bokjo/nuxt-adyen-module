@@ -3,6 +3,7 @@
     <adyen-checkout
       :value="priceMock.amount"
       :currency="priceMock.currency"
+      :locale="locale"
       :implementedPaymentMethods="implementedPaymentMethods"
       :on-submit="onSubmit"
       :on-error="onError"
@@ -41,7 +42,8 @@ export default {
         "klarna",
         "klarna_account",
         "boletobancario_santander",
-      ]
+      ],
+      locale: 'en_US'
     }
   },
   computed: {
