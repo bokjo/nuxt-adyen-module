@@ -7,6 +7,7 @@ import { Name } from "@adyen/api-library/lib/src/typings/checkout/name";
 import { PaymentMethod } from "@adyen/api-library/lib/src/typings/checkout/paymentMethod";
 import { PaymentMethodsResponse } from "@adyen/api-library/lib/src/typings/checkout/paymentMethodsResponse";
 import { PaymentResponse } from "@adyen/api-library/lib/src/typings/checkout/paymentResponse";
+import { RiskData } from "@adyen/api-library/lib/src/typings/checkout/riskData";
 
 export enum ChannelEnum {
   IOs,
@@ -28,6 +29,9 @@ export type AdyenConfigOptions = {
 export type Environment = "LIVE" | "TEST";
 
 export type InitiatePaymentBody = {
+  riskData: RiskData;
+  origin: string;
+  clientStateDataIndicator: boolean;
   lineItems?: LineItem [];
   shopper?: {
     email?: string;

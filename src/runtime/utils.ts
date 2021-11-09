@@ -63,7 +63,7 @@ export const createPaymentMethod = (initiatePaymentBody: InitiatePaymentBody) =>
 
 export const createBillingAddress = (initiatePaymentBody: InitiatePaymentBody) => {
   const isBillingUndefined = typeof initiatePaymentBody?.billingAddress === "undefined";
-  const isBillingEmpty = Object.keys(initiatePaymentBody?.billingAddress).length === 0;
+  const isBillingEmpty = !isBillingUndefined ? Object.keys(initiatePaymentBody?.billingAddress).length === 0 : undefined;
 
   return isBillingUndefined || isBillingEmpty ? undefined : initiatePaymentBody?.billingAddress
 }

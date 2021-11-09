@@ -5,8 +5,6 @@
       :currency="priceMock.currency"
       :locale="locale"
       :implementedPaymentMethods="implementedPaymentMethods"
-      :on-submit="onSubmit"
-      :on-error="onError"
       :on-additional-details="onAdditionalDetails"
       :on-payment-completed="onPaymentCompleted"
       :handle-redirect-after-payment="handleRedirectAfterPayment"

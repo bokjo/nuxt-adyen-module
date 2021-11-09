@@ -69,13 +69,17 @@ export default {
           clientKey,
           paymentMethodsResponse: this.filterUnimplemented(paymentMethodsResponse),
           session,
-          paymentMethodsConfiguration,
+          paymentMethodsConfiguration: this.createPaymentMethodsConfiguration(paymentMethodsConfiguration),
           onSubmit: async (state, dropin) => {
             if (this.onSubmit) {
               await this.onSubmit(state, dropin)
             } else {
               if (state.isValid) {
-                const result = await this.$adyen.initiatePayment(state.data);
+                // TODO: Debug issue with amount not being set after submiting payment.
+                // Setting session and card configuration with value and currency did not work :(
+                const initiatePaymentBody = { ...state.data, amount: { value, currency } }
+
+                const result = await this.$adyen.initiatePayment(initiatePaymentBody);
                 this.handleServerResponse(result, dropin);
               }
             }
@@ -119,22 +123,6 @@ export default {
       } else {
         if (this.handleRedirectAfterPayment) {
           this.handleRedirectAfterPayment(res.resultCode);
-        } else {
-          switch (resultCode) {
-            case "Authorised":
-              window.location.href = "/result/success";
-              break;
-            case "Pending":
-            case "Received":
-              window.location.href = "/result/pending";
-              break;
-            case "Refused":
-              window.location.href = "/result/failed";
-              break;
-            default:
-              window.location.href = "/result/error";
-              break;
-          }
         }
       }
     },
@@ -144,6 +132,18 @@ export default {
       }
 
       return pm;
+    },
+    createPaymentMethodsConfiguration(paymentMethodsConfiguration) {
+      if (Object.keys(paymentMethodsConfiguration).length) {
+        return paymentMethodsConfiguration;
+      } else {
+        return {
+          card: {
+            hasHolderName: true,
+            holderNameRequired: true,
+          }
+        };
+      }
     }
   }
 }

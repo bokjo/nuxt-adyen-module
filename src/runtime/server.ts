@@ -18,13 +18,13 @@ export class AdyenServerApi implements AdyenCheckoutServer {
     this.checkout = new CheckoutAPI(client);
   }
 
-  async createPaymentSession(amount: Amount): Promise<CreateCheckoutSessionResponse> {
+  async createPaymentSession({ currency, value }: Amount): Promise<CreateCheckoutSessionResponse> {
     try {
       const response = await this.checkout.sessions({
         merchantAccount: this._config.merchantAccount,
         amount: {
-          currency: amount.currency,
-          value: amount.value
+          currency,
+          value
         },
         reference: createUniqueReference(),
         returnUrl: this._config.returnUrl
@@ -71,7 +71,8 @@ export class AdyenServerApi implements AdyenCheckoutServer {
       const orderRef = createUniqueReference();
 
       const response = await this.checkout.payments({
-        amount: { currency, value: initiatePaymentBody.amount.value },
+        // TODO: issue with no amount
+        amount: { currency, value: initiatePaymentBody?.amount?.value },
         reference: orderRef, // required
         merchantAccount: this._config.merchantAccount,
         channel: this._config.channel as any, // Cannot find the proper type due to Adyen namespace
