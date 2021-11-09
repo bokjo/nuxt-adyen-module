@@ -1,4 +1,5 @@
 import { getNuxt, setupTest } from '@nuxt/test-utils'
+import { ChannelEnum } from '../src/runtime/api'
 
 describe('module', () => {
   setupTest({
@@ -8,17 +9,27 @@ describe('module', () => {
     config: {
       dev: true,
       adyen: {
-        locale: 'test',
-        environment: 'test',
+        merchantAccount: 'test',
+        returnUrl: 'test',
+        checkoutEndpoint: 'test',
+        apiKey: 'test',
+        environment: 'TEST',
+        origin: 'test',
+        channel: ChannelEnum.Web,
         clientKey: 'test'
       }
     }
   })
 
   test('should have config with Adyen options', () => {
-    const { locale, environment, clientKey } = getNuxt().options.adyen
+    const { merchantAccount, environment, clientKey, returnUrl, checkoutEndpoint, apiKey, origin, channel } = getNuxt().options.adyen
 
-    expect(locale).toBeDefined()
+    expect(merchantAccount).toBeDefined()
+    expect(returnUrl).toBeDefined()
+    expect(checkoutEndpoint).toBeDefined()
+    expect(channel).toBeDefined()
+    expect(origin).toBeDefined()
+    expect(apiKey).toBeDefined()
     expect(environment).toBeDefined()
     expect(clientKey).toBeDefined()
   })
