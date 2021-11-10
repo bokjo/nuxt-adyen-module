@@ -12,8 +12,8 @@ export const createMiddleware = (configuration: AdyenConfigOptions) => {
   app.use(bodyParser.json())
 
   // eslint-disable-next-line
-  app.get("api/getPaymentDataStore", async (req: any, res: any) => {
-    const result = await adyenServerApi.getPaymentDataStore()
+  app.get("api/getPaymentDataStore", (req: any, res: any) => {
+    const result = adyenServerApi.getPaymentDataStore()
 
     res.send(result)
   })

@@ -23,11 +23,11 @@ export const findCurrency = (initiatePaymentBody: InitiatePaymentBody) => {
 }
 
 export const findPayment = (pspReference: string, paymentStore: LocalStore) => {
-  const payments = Object.values(paymentStore).filter((v) => v.modificationRef === pspReference);
+  const payments = Object.values(paymentStore).filter(v => v.modificationRef === pspReference)
   if (payments.length > 0) {
-    console.error("More than one payment found with same modification PSP reference");
+    console.error('More than one payment found with same modification PSP reference')
   }
-  return payments[0];
+  return payments[0]
 }
 
 // eslint-disable-next-line
