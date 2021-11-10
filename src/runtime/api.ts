@@ -8,6 +8,7 @@ import { PaymentMethod } from '@adyen/api-library/lib/src/typings/checkout/payme
 import { PaymentMethodsResponse } from '@adyen/api-library/lib/src/typings/checkout/paymentMethodsResponse'
 import { PaymentResponse } from '@adyen/api-library/lib/src/typings/checkout/paymentResponse'
 import { RiskData } from '@adyen/api-library/lib/src/typings/checkout/riskData'
+import { NotificationRequestItem } from '@adyen/api-library/lib/src/typings/notification/notificationRequestItem'
 
 export enum ChannelEnum {
   IOs,
@@ -22,6 +23,10 @@ export type Amount = {
   value: number;
 };
 
+export type LocalStore = {
+  [key: string]: any;
+};
+
 export type AdyenConfigOptions = {
   merchantAccount: string;
   returnUrl: string;
@@ -31,6 +36,7 @@ export type AdyenConfigOptions = {
   clientKey: string;
   environment: Environment;
   channel: ChannelEnum;
+  hmacKey: string;
   registerCheckoutComponent?: boolean;
 };
 
@@ -63,5 +69,6 @@ export interface AdyenCheckoutClient extends AdyenCheckout {
 };
 
 export interface AdyenCheckoutServer extends AdyenCheckout {
-  getPaymentsDetails(paymentDetailsRequest: DetailsRequest): Promise<PaymentResponse>;
+  getPaymentsDetails(paymentDetailsRequest: DetailsRequest, orderRef: string): Promise<PaymentResponse>;
+  handleNotificationWebhook(notificationRequestItems: NotificationRequestItem[]): void;
 };

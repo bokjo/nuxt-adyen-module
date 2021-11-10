@@ -13,6 +13,7 @@ export default {
     environment: process.env.ADYEN_ENVIRONMENT,
     origin: process.env.ADYEN_ORIGIN_URL,
     channel: process.env.ADYEN_CHANNEL,
-    clientKey: process.env.ADYEN_CLIENT_KEY
+    clientKey: process.env.ADYEN_CLIENT_KEY,
+    hmacKey: process.env.ADYEN_HMAC_KEY
   }
 }

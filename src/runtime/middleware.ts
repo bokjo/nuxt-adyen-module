@@ -8,26 +8,33 @@ const bodyParser = require('body-parser')
 const app = require('express')()
 
 export const createMiddleware = (configuration: AdyenConfigOptions) => {
-  const adyenClientAPI = new AdyenServerApi(configuration)
+  const adyenServerApi = new AdyenServerApi(configuration)
   app.use(bodyParser.json())
 
   // eslint-disable-next-line
+  app.get("api/getPaymentDataStore", async (req: any, res: any) => {
+    const result = await adyenServerApi.getPaymentDataStore()
+
+    res.send(result)
+  })
+
+  // eslint-disable-next-line
   app.get("/api/getPaymentMethods", async (req: any, res: any) => {
-    const result = await adyenClientAPI.getPaymentMethods()
+    const result = await adyenServerApi.getPaymentMethods()
 
     res.send({ result, clientKey: configuration.clientKey, environment: configuration.environment })
   })
 
   // eslint-disable-next-line
   app.post('/api/createPaymentSession', async (req: any, res: any) => {
-    const result = await adyenClientAPI.createPaymentSession(req.body)
+    const result = await adyenServerApi.createPaymentSession(req.body)
 
     res.send(result)
   })
 
   // eslint-disable-next-line
   app.post("/api/initiatePayment", async (req: any, res: any) => {
-    const result = await adyenClientAPI.initiatePayment(req)
+    const result = await adyenServerApi.initiatePayment(req)
 
     res.send(result)
   })
@@ -38,10 +45,11 @@ export const createMiddleware = (configuration: AdyenConfigOptions) => {
       details: req.body.details,
       paymentData: req.body.paymentData
     }
+    const orderRef = req?.query?.orderRef
 
-    const response = await adyenClientAPI.getPaymentsDetails(payload)
+    const response = await adyenServerApi.getPaymentsDetails(payload, orderRef)
 
-    return response
+    res.send(response)
   })
 
   // eslint-disable-next-line
@@ -53,50 +61,18 @@ export const createMiddleware = (configuration: AdyenConfigOptions) => {
     } else if (redirect.payload) {
       details.payload = redirect.payload
     }
+    const orderRef = req?.query?.orderRef
 
-    const response = await adyenClientAPI.getPaymentsDetails({ details })
+    const response = await adyenServerApi.getPaymentsDetails({ details }, orderRef)
 
     redirectByCode(res, response.resultCode)
   })
 
   // eslint-disable-next-line
   app.post("/api/webhook/notification", (req: any, res: any) => {
-    // TODO: finish developing this webhook
-    console.log('Received webhook')
-    // get the notification request from POST body
     const notificationRequestItems: NotificationRequestItem[] = req.body.notificationItems
 
-    console.log(notificationRequestItems)
-
-    // notificationRequestItems.forEach(({ NotificationRequestItem }) => {
-    //   console.info("Received webhook notification", NotificationRequestItem);
-    //   // Process the notification based on the eventCode
-    //   if (NotificationRequestItem.eventCode === "CANCEL_OR_REFUND") {
-    //     if (validator.validateHMAC(NotificationRequestItem, process.env.ADYEN_HMAC_KEY)) {
-    //       const payment = findPayment(NotificationRequestItem.pspReference);
-
-    //       if (NotificationRequestItem.success === "true") {
-    //         // update with additionalData.modification.action
-    //         if (
-    //           "modification.action" in NotificationRequestItem.additionalData &&
-    //           "refund" === NotificationRequestItem.additionalData["modification.action"]
-    //         ) {
-    //           payment.status = "Refunded";
-    //         } else {
-    //           payment.status = "Cancelled";
-    //         }
-    //       } else {
-    //         // update with failure
-    //         payment.status = "Refund failed";
-    //       }
-    //     } else {
-    //       console.error("NotificationRequest with invalid HMAC key received");
-    //     }
-    //   } else {
-    //     // do nothing
-    //     console.info("skipping non actionable webhook");
-    //   }
-    // });
+    adyenServerApi.handleNotificationWebhook(notificationRequestItems)
 
     res.send('[accepted]')
   })

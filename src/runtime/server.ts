@@ -1,21 +1,36 @@
-import { CheckoutAPI, Client } from '@adyen/api-library'
+import { CheckoutAPI, Client, hmacValidator, Modification } from '@adyen/api-library'
 import { DetailsRequest } from '@adyen/api-library/lib/src/typings/checkout/detailsRequest'
 import { PaymentResponse } from '@adyen/api-library/lib/src/typings/checkout/paymentResponse'
 import { CreateCheckoutSessionResponse } from '@adyen/api-library/lib/src/typings/checkout/createCheckoutSessionResponse'
 import { PaymentMethodsResponse } from '@adyen/api-library/lib/src/typings/checkout/paymentMethodsResponse'
-import { AdyenCheckoutServer, AdyenConfigOptions, Amount, InitiatePaymentBody } from './api'
-import { createBillingAddress, createCountryCode, createPaymentMethod, createUniqueReference, findCurrency } from './utils'
+import { AdyenCheckoutServer, AdyenConfigOptions, Amount, InitiatePaymentBody, LocalStore } from './api'
+import { createBillingAddress, createCountryCode, createPaymentMethod, createUniqueReference, findCurrency, findPayment } from './utils'
+import { NotificationRequestItem } from '@adyen/api-library/lib/src/typings/notification/notificationRequestItem'
 
 export class AdyenServerApi implements AdyenCheckoutServer {
-  private readonly checkout: CheckoutAPI
-  private _config: AdyenConfigOptions
+  private readonly checkout: CheckoutAPI;
+  private _config: AdyenConfigOptions;
+  public modification: Modification;
+  public validator: hmacValidator;
+
+  // in memory store for transaction
+  private paymentStore: LocalStore = {};
+  private originStore: LocalStore = {};
 
   constructor (config: AdyenConfigOptions) {
     this._config = config
 
     const client = new Client(config)
 
+    this.modification = new Modification(client);
+
     this.checkout = new CheckoutAPI(client)
+
+    this.validator = new hmacValidator();
+  }
+
+  async getPaymentDataStore(): Promise<LocalStore> {
+    return new Promise((resolve) => resolve(this.paymentStore));
   }
 
   async createPaymentSession ({ currency, value }: Amount): Promise<CreateCheckoutSessionResponse> {
@@ -51,9 +66,14 @@ export class AdyenServerApi implements AdyenCheckoutServer {
     }
   }
 
-  async getPaymentsDetails (paymentDetailsRequest: DetailsRequest) {
+  async getPaymentsDetails (paymentDetailsRequest: DetailsRequest, orderRef: string) {
     try {
       const response = await this.checkout.paymentsDetails(paymentDetailsRequest)
+
+      if (!response.action) {
+        this.paymentStore[orderRef].paymentRef = response.pspReference;
+        this.paymentStore[orderRef].status = response.resultCode;
+      }
 
       return response
     } catch (err: any) {
@@ -97,10 +117,57 @@ export class AdyenServerApi implements AdyenCheckoutServer {
         shopperLocale: initiatePaymentBody?.shopper?.locale,
         lineItems: initiatePaymentBody.lineItems
       })
+
+      const { action } = response;
+
+      // save transaction in memory
+      this.paymentStore[orderRef] = {
+        amount: { currency, value: 1000 },
+        reference: orderRef,
+      };
+
+      if (action) {
+        const originalHost = new URL(req.headers["referer"]);
+        if (originalHost) {
+          this.originStore[orderRef] = originalHost.origin;
+        }
+      } else {
+        this.paymentStore[orderRef].paymentRef = response.pspReference;
+        this.paymentStore[orderRef].status = response.resultCode;
+      }
+
       return response
     } catch (err: any) {
       console.error(`Error: ${err.message}, error code: ${err.errorCode}`)
       throw new Error(err)
     }
+  }
+
+  handleNotificationWebhook(notificationRequestItems: NotificationRequestItem[]): void {
+    notificationRequestItems.forEach((notificationItem) => {
+      const { NotificationRequestItem }: any = notificationItem;  // Wrong typing in Adyen package
+      if (NotificationRequestItem.eventCode === "CANCEL_OR_REFUND") {
+        if (this.validator.validateHMAC(NotificationRequestItem, this._config.hmacKey)) {
+          const payment = findPayment(NotificationRequestItem.pspReference, this.paymentStore);
+
+          if (NotificationRequestItem.success === "true") {
+            if (
+              "modification.action" in NotificationRequestItem.additionalData &&
+              "refund" === NotificationRequestItem.additionalData["modification.action"]
+            ) {
+              payment.status = "Refunded";
+            } else {
+              payment.status = "Cancelled";
+            }
+          } else {
+            payment.status = "Refund failed";
+          }
+        } else {
+          console.error("NotificationRequest with invalid HMAC key received");
+        }
+      } else {
+        console.info("skipping non actionable webhook");
+      }
+    });
   }
 }
