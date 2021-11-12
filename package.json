@@ -1,6 +1,6 @@
 {
   "name": "nuxt-adyen-module",
-  "version": "1.1.0",
+  "version": "2.0.0-rc.1",
   "description": "Adyen Payment Module for Nuxt.js",
   "keywords": [
     "nuxt",
