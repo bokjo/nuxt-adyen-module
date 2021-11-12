@@ -38,6 +38,7 @@ export type AdyenConfigOptions = {
   channel: ChannelEnum;
   hmacKey: string;
   registerCheckoutComponent?: boolean;
+  disableServerMiddleware?: boolean;
 };
 
 export type InitiatePaymentBody = {

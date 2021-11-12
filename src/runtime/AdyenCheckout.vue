@@ -48,6 +48,12 @@ export default {
     },
     handleRedirectAfterPayment: {
       type: Function
+    },
+    getPaymentMethods: {
+      type: Function
+    },
+    createPaymentSession: {
+      type: Function
     }
   },
   async mounted () {
@@ -59,8 +65,8 @@ export default {
         const { locale, translations, paymentMethodsConfiguration, value, currency } = this
 
         const { default: AdyenCheckout } = await import('@adyen/adyen-web')
-        const { result: paymentMethodsResponse, clientKey, environment } = await this.$adyen.getPaymentMethods()
-        const session = await this.$adyen.createPaymentSession({ currency, value })
+        const { result: paymentMethodsResponse, clientKey, environment } = this.getPaymentMethods ? await getPaymentMethods() : await this.$adyen.getPaymentMethods()
+        const session = this.createPaymentSession ? await this.createPaymentSession() : await this.$adyen.createPaymentSession({ currency, value })
 
         const configuration = {
           locale,

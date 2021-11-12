@@ -26,7 +26,9 @@ const nuxtModule: Module<ModuleOptions> = function (moduleOptions) {
   const runtimeDir = path.resolve(__dirname, 'runtime')
   this.nuxt.options.alias['~adyen'] = runtimeDir
   this.nuxt.options.build.transpile.push(runtimeDir)
-  this.addServerMiddleware(createMiddleware(options))
+  if (!options.disableServerMiddleware) {
+    this.addServerMiddleware(createMiddleware(options))
+  }
 
   this.addPlugin({
     src: path.resolve(runtimeDir, 'plugin.mjs'),

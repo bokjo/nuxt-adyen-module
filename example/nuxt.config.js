@@ -14,6 +14,8 @@ export default {
     origin: process.env.ADYEN_ORIGIN_URL,
     channel: process.env.ADYEN_CHANNEL,
     clientKey: process.env.ADYEN_CLIENT_KEY,
-    hmacKey: process.env.ADYEN_HMAC_KEY
+    hmacKey: process.env.ADYEN_HMAC_KEY,
+    // registerCheckoutComponent: true,  // optional property that will be used to register AdyenCheckout.vue component globally
+    // disableServerMiddleware: true  // optional property that will be used to disable module server middelware to have complete control over the requests.
   }
 }
