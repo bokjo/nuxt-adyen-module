@@ -29,8 +29,10 @@ export class AdyenServerApi implements AdyenCheckoutServer {
     this.validator = new HmacValidator()
   }
 
-  getPaymentDataStore (): LocalStore {
-    return this.paymentStore
+  async getPaymentDataStore (): Promise<LocalStore> {
+    return new Promise((resolve, reject) => {
+      resolve(this.paymentStore)
+    })
   }
 
   async createPaymentSession ({ currency, value }: Amount): Promise<CreateCheckoutSessionResponse> {

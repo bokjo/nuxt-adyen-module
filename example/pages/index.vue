@@ -48,6 +48,9 @@ export default {
       return priceMock
     }
   },
+  async mounted() {
+    console.log(await this.$adyen.getPaymentDataStore())
+  },
   methods: {
     logPaymentSubmittedData (e) {
       // eslint-disable-next-line no-console
