@@ -124,7 +124,7 @@ export class AdyenServerApi implements AdyenCheckoutServer {
 
       // save transaction in memory
       this.paymentStore[orderRef] = {
-        amount: { currency, value: 1000 },
+        amount: { currency, value: initiatePaymentBody?.amount?.value },
         reference: orderRef
       }
 
