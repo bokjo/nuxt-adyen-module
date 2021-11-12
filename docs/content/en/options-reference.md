@@ -7,26 +7,42 @@ category: Getting started
 
 See the [Setup](/setup) section on where to set the module options.
 
-## `locale`
+## `merchantAccount`
 
-- type: `string`
-- default: `'en_US'`
+<https://docs.adyen.com/account/manage-account-structure>
 
-Locale supported by the your application. Example of a locale can be `'en_US'`.
+## `apiKey`
 
-Check out all available locales [here](https://docs.adyen.com/online-payments/classic-integrations/checkout-sdks/web-sdk/customization/localization)
-
-## `environment`
-
-- type: `string`
-- default: `test`
-
-Identifies an environment type of your application. When you're ready to accept live payments, change the value to one of our live environments.
-
+<https://docs.adyen.com/development-resources/api-credentials#generate-api-key>
 
 ## `clientKey`
 
-- type: `string`
-- required
+<https://docs.adyen.com/online-payments/android/drop-in#client-key>
 
-A public key linked to your API credential, used for client-side authentication.
+## `returnUrl`
+
+i.e. <http://localhost:8080/api/handleShopperRedirect>
+
+## `checkoutEndpoint`
+
+i.e. <http://localhost:8080/checkout>
+
+## `origin`
+
+i.e. <http://localhost:8080>
+
+## `hmacKey`
+
+<https://docs.adyen.com/development-resources/webhooks/verify-hmac-signatures#enable-hmac-signatures>
+
+## `channel`
+
+`Web`, `IOS` or `Android`
+
+## `registerCheckoutComponent`
+
+When set to true, it will register the AdyenCheckout.vue component globally so that there is no need to import it and register manually. Disabled by default.
+
+## `disableServerMiddleware`
+
+When set to true, it will not register a serverMiddleware with all endpoints handled for Adyen payment handling. Useful when you already have a server and you do not need another one from Nuxt.

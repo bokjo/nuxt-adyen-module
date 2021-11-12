@@ -37,7 +37,7 @@ Then, add `nuxt-adyen-module` to the `modules` section in your `nuxt.config.js`.
   modules: [
     'nuxt-adyen-module',
   ],
-  'nuxt-adyen-module': {
+  adyen: {
     /* module options */
   },
 }
