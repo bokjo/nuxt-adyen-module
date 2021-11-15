@@ -1,12 +1,13 @@
 <template>
   <div>
     <adyen-checkout
-      :amount="priceMock.amount"
+      :value="priceMock.amount"
       :currency="priceMock.currency"
-      :payment-methods-response="paymentMethodsMock"
-      :on-submit="onSubmit"
-      :on-error="onError"
+      :locale="locale"
+      :implemented-payment-methods="implementedPaymentMethods"
       :on-additional-details="onAdditionalDetails"
+      :on-payment-completed="onPaymentCompleted"
+      :handle-redirect-after-payment="handleRedirectAfterPayment"
       @payment-submitted="logPaymentSubmittedData"
       @additional-details="logAdditionalDetails"
       @payment-error="logError"
@@ -15,18 +16,34 @@
 </template>
 
 <script>
-import AdyenCheckout from '../../src/AdyenCheckout.vue'
-import paymentMethodsMock from '../mocks/paymentMethodsMock.json'
+import AdyenCheckout from '../../src/runtime/AdyenCheckout.vue'
 import { priceMock } from '../mocks/priceMock'
 
 export default {
   components: {
     AdyenCheckout
   },
+  data () {
+    return {
+      implementedPaymentMethods:
+      [
+        'scheme',
+        'ideal',
+        'dotpay',
+        'giropay',
+        'sepadirectdebit',
+        'directEbanking',
+        'ach',
+        'alipay',
+        'klarna_paynow',
+        'klarna',
+        'klarna_account',
+        'boletobancario_santander'
+      ],
+      locale: 'en_US'
+    }
+  },
   computed: {
-    paymentMethodsMock () {
-      return paymentMethodsMock
-    },
     priceMock () {
       return priceMock
     }
@@ -61,6 +78,28 @@ export default {
     onError (state, dropin) {
       // eslint-disable-next-line no-console
       console.log(state)
+    },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    onPaymentCompleted (state, dropin) {
+      // eslint-disable-next-line no-console
+      console.log(state)
+    },
+    handleRedirectAfterPayment (resultCode) {
+      switch (resultCode) {
+        case 'Authorised':
+          window.location.href = '/result/success'
+          break
+        case 'Pending':
+        case 'Received':
+          window.location.href = '/result/pending'
+          break
+        case 'Refused':
+          window.location.href = '/result/failed'
+          break
+        default:
+          window.location.href = '/result/error'
+          break
+      }
     }
   }
 }

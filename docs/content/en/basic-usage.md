@@ -5,19 +5,29 @@ position: 3
 category: Getting started
 ---
 
-The fastest way to get started with **nuxt-adyen-module** is to define the options like `clientKey`, `environment`, and `locale`:
+## Options
+
+The fastest way to get started with **nuxt-adyen-module** is to define the options:
 
 ```js {}[nuxt.config.js]
 {
   modules: [
     ['nuxt-adyen-module', {
-      locale: "en_US",
+      merchantAccount: "test",
+      returnUrl: "http://localhost:8080/api/handleShopperRedirect",
+      checkoutEndpoint: "http://localhost:8080/checkout",
+      apiKey: "<YOUR_API_KEY>",
+      origin: "http://localhost:8080",
+      channel: "Web | IOS | Android",
+      hmacKey: "dwabhidwbaibdwia",
       environment: "test | live",
-      clientKey: <YOUR_CLIENT_TOKEN>,
+      clientKey: "<YOUR_CLIENT_KEY>",
     }]
   ],
 }
 ```
+
+*We strongly recommend to use environment variables for all these values!*
 
 With this setup, you will be able to use AdyenCheckout.vue component for collecting card details. This will then allow to send this data to Adyen for processing.
 
@@ -28,7 +38,7 @@ These options are passed as is to **@adyen/web**, refer to the [doc](https://git
 In order to use AdyenCheckout.vue component make sure to import it to your project directly from this module:
 
 ```js
-import AdyenCheckout from 'nuxt-adyen-module/lib/AdyenCheckout.vue';
+import AdyenCheckout from 'nuxt-adyen-module/src/runtime/AdyenCheckout.vue';
 ```
 
 Then, inside of your checkout component make sure to pass all required props, prop functions, and event handlers that are required for the component to work correctly (and for you to have advanced customizability and full control over component behavior)
@@ -37,62 +47,46 @@ Then, inside of your checkout component make sure to pass all required props, pr
 // Checkout.vue
 
 <template>
-  <adyen-checkout
-    :amount="mockedPrice.amount"
-    :currency="mockedPrice.currency"`
-    :paymentMethodsResponse="paymentMethodsMock"
-    :onSubmit="onSubmit"
-    :onError="onError"
-    :onAdditionalDetails="onAdditionalDetails"
-    @payment-submitted="logPaymentSubmittedData"
-    @additional-details="logAdditionalDetails"
-    @payment-error="logError"
-  />
+  <div>
+    // Other checkout components
+    <adyen-checkout
+      :value="priceMock.amount"
+      :currency="priceMock.currency"
+      :locale="locale"
+      :implemented-payment-methods="implementedPaymentMethods"
+    />
+  </div>
 </template>
 
 <script>
-import AdyenCheckout from 'nuxt-adyen-module/lib/AdyenCheckout.vue';
-import paymentMethodsMock from "../paymentMethodsMock.json";
+import AdyenCheckout from 'nuxt-adyen-module/src/runtime/AdyenCheckout.vue';
 
 export default {
   components: {
     AdyenCheckout
   },
-  data() {
+  data () {
     return {
-      mockedPrice: {
+      implementedPaymentMethods:
+      [
+        'scheme',
+        'ideal',
+        'dotpay',
+        'giropay',
+        'sepadirectdebit',
+        'directEbanking',
+        'ach',
+        'alipay',
+        'klarna_paynow',
+        'klarna',
+        'klarna_account',
+        'boletobancario_santander'
+      ],
+      locale: 'en_US',
+      priceMock: {
         amount: 1000,
-        currency: 'EUR',
+        currency: 'EUR'
       }
-    }
-  },
-  computed: {
-    paymentMethodsMock() {
-      return paymentMethodsMock;
-    }
-  },
-  methods: {
-    logPaymentSubmittedData(e) {
-      console.log('logPaymentSubmittedData', e)
-    },
-    logAdditionalDetails(e) {
-      console.log('logAdditionalDetails', e)
-    },
-    logError(e) {
-      console.log('logError', e)
-    },
-    onSubmit(state, dropin) {
-      dropin.setStatus("loading");
-
-      setTimeout(() => {
-        dropin.setStatus("finished")
-      }, 3000)
-    },
-    onAdditionalDetails(state, dropin) {
-      console.log(state);
-    },
-    onError(state, dropin) {
-      console.log(state);
     }
   }
 }
