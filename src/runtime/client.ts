@@ -3,7 +3,19 @@ import { DetailsRequest } from '@adyen/api-library/lib/src/typings/checkout/deta
 import { PaymentMethodsResponse } from '@adyen/api-library/lib/src/typings/checkout/paymentMethodsResponse'
 import { PaymentResponse } from '@adyen/api-library/lib/src/typings/checkout/paymentResponse'
 import { AdyenCheckoutClient, Amount, LocalStore } from './api'
-import { sendRequestToServer } from './utils'
+
+export const sendRequestToServer = async <RETURN_TYPE>(method: string, url: string, data?: any) => {
+  const result: RETURN_TYPE = await fetch(url, {
+    method,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: data ? JSON.stringify(data) : null
+  }).then(res => res.json())
+    .catch(error => ({ error }))
+
+  return result
+}
 
 export class AdyenClientApi implements AdyenCheckoutClient {
   async createPaymentSession (amount: Amount): Promise<CreateCheckoutSessionResponse> {

@@ -49,19 +49,6 @@ export const redirectByCode = (res: any, code: any) => {
   }
 }
 
-export const sendRequestToServer = async <RETURN_TYPE>(method: string, url: string, data?: any) => {
-  const result: RETURN_TYPE = await fetch(url, {
-    method,
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: data ? JSON.stringify(data) : null
-  }).then(res => res.json())
-    .catch(error => ({ error }))
-
-  return result
-}
-
 export const createPaymentMethod = (initiatePaymentBody: InitiatePaymentBody) => {
   const isMethodBoleto = initiatePaymentBody?.paymentMethod?.type?.includes('boleto')
 
