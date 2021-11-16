@@ -13,6 +13,7 @@
     "plugins"
   ],
   "repository": "baroshem/nuxt-adyen-module",
+  "homepage": "https://nuxt-adyen.vercel.app",
   "license": "MIT",
   "contributors": [
     {
@@ -29,6 +30,7 @@
   "scripts": {
     "build": "siroc build  && mkdist --src src/runtime --dist dist/runtime",
     "dev": "nuxt-ts example",
+    "dev:docs": "cd docs && yarn dev",
     "lint": "eslint --ext .js,.ts,.vue .",
     "release": "yarn build && yarn test && standard-version && git push --follow-tags && npm publish",
     "test": "yarn lint && jest"
