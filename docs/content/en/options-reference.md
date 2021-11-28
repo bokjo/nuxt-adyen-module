@@ -35,6 +35,10 @@ i.e. <http://localhost:8080>
 
 <https://docs.adyen.com/development-resources/webhooks/verify-hmac-signatures#enable-hmac-signatures>
 
+## `environment`
+
+`TEST` or `LIVE`
+
 ## `channel`
 
 `Web`, `IOS` or `Android`
