@@ -22,7 +22,16 @@ describe('module', () => {
   })
 
   test('should have config with Adyen options', () => {
-    const { merchantAccount, environment, clientKey, returnUrl, checkoutEndpoint, apiKey, origin, channel } = getNuxt().options.adyen
+    const {
+      merchantAccount,
+      environment,
+      clientKey,
+      returnUrl,
+      checkoutEndpoint,
+      apiKey,
+      origin,
+      channel
+    } = getNuxt().options.adyen
 
     expect(merchantAccount).toBeDefined()
     expect(returnUrl).toBeDefined()
