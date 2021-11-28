@@ -22,11 +22,15 @@ export const createMiddleware = (configuration: AdyenConfigOptions) => {
   app.get("/api/getPaymentMethods", async (req: any, res: any) => {
     const result = await adyenServerApi.getPaymentMethods()
 
-    res.send({ result, clientKey: configuration.clientKey, environment: configuration.environment })
+    res.send({
+      result,
+      clientKey: configuration.clientKey,
+      environment: configuration.environment
+    })
   })
 
   // eslint-disable-next-line
-  app.post('/api/createPaymentSession', async (req: any, res: any) => {
+  app.post("/api/createPaymentSession", async (req: any, res: any) => {
     const result = await adyenServerApi.createPaymentSession(req.body)
 
     res.send(result)
@@ -53,8 +57,8 @@ export const createMiddleware = (configuration: AdyenConfigOptions) => {
   })
 
   // eslint-disable-next-line
-  app.post("/api/handleShopperRedirect", async (req: any, res: any) => {
-    const redirect = req.body
+  app.get("/api/handleShopperRedirect", async (req: any, res: any) => {
+    const redirect = req.query
     const details: PaymentCompletionDetails = {}
     if (redirect.redirectResult) {
       details.redirectResult = redirect.redirectResult
@@ -63,14 +67,18 @@ export const createMiddleware = (configuration: AdyenConfigOptions) => {
     }
     const orderRef = req?.query?.orderRef
 
-    const response = await adyenServerApi.getPaymentsDetails({ details }, orderRef)
+    const response = await adyenServerApi.getPaymentsDetails(
+      { details },
+      orderRef
+    )
 
     redirectByCode(res, response.resultCode)
   })
 
   // eslint-disable-next-line
   app.post("/api/webhook/notification", (req: any, res: any) => {
-    const notificationRequestItems: NotificationRequestItem[] = req.body.notificationItems
+    const notificationRequestItems: NotificationRequestItem[] =
+      req.body.notificationItems
 
     adyenServerApi.handleNotificationWebhook(notificationRequestItems)
 
