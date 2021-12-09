@@ -58,7 +58,7 @@ For all available module options, please refer to [options](https://nuxt-adyen.v
 3. Import `AdyenCheckout` component
 
 ```js
-import AdyenCheckout from 'nuxt-adyen-module/src/runtime/AdyenCheckout.vue';
+import AdyenCheckout from 'nuxt-adyen-module/dist/runtime/AdyenCheckout.vue';
 ```
 
 4. Provide all necessary data to the AdyenCheckout component like props and props functions described [here]()
