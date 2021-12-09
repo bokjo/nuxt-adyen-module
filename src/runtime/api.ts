@@ -45,7 +45,7 @@ export type InitiatePaymentBody = {
   riskData: RiskData;
   origin: string;
   clientStateDataIndicator: boolean;
-  lineItems?: LineItem [];
+  lineItems?: LineItem[];
   shopper?: {
     email?: string;
     locale?: string;

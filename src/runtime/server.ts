@@ -1,29 +1,11 @@
-import {
-  CheckoutAPI,
-  Client,
-  hmacValidator as HmacValidator,
-  Modification
-} from '@adyen/api-library'
+import { CheckoutAPI, Client, hmacValidator as HmacValidator, Modification } from '@adyen/api-library'
 import { DetailsRequest } from '@adyen/api-library/lib/src/typings/checkout/detailsRequest'
 import { PaymentResponse } from '@adyen/api-library/lib/src/typings/checkout/paymentResponse'
 import { CreateCheckoutSessionResponse } from '@adyen/api-library/lib/src/typings/checkout/createCheckoutSessionResponse'
 import { PaymentMethodsResponse } from '@adyen/api-library/lib/src/typings/checkout/paymentMethodsResponse'
 import { NotificationRequestItem } from '@adyen/api-library/lib/src/typings/notification/notificationRequestItem'
-import {
-  AdyenCheckoutServer,
-  AdyenConfigOptions,
-  Amount,
-  InitiatePaymentBody,
-  LocalStore
-} from './api'
-import {
-  createBillingAddress,
-  createCountryCode,
-  createPaymentMethod,
-  createUniqueReference,
-  findCurrency,
-  findPayment
-} from './utils'
+import { AdyenCheckoutServer, AdyenConfigOptions, Amount, InitiatePaymentBody, LocalStore } from './api'
+import { createBillingAddress, createCountryCode, createPaymentMethod, createUniqueReference, findCurrency, findPayment } from './utils'
 
 export class AdyenServerApi implements AdyenCheckoutServer {
   private readonly checkout: CheckoutAPI
@@ -53,10 +35,7 @@ export class AdyenServerApi implements AdyenCheckoutServer {
     })
   }
 
-  async createPaymentSession ({
-    currency,
-    value
-  }: Amount): Promise<CreateCheckoutSessionResponse> {
+  async createPaymentSession ({ currency, value }: Amount): Promise<CreateCheckoutSessionResponse> {
     try {
       const response = await this.checkout.sessions({
         merchantAccount: this._config.merchantAccount,
@@ -89,14 +68,9 @@ export class AdyenServerApi implements AdyenCheckoutServer {
     }
   }
 
-  async getPaymentsDetails (
-    paymentDetailsRequest: DetailsRequest,
-    orderRef: string
-  ) {
+  async getPaymentsDetails (paymentDetailsRequest: DetailsRequest, orderRef: string) {
     try {
-      const response = await this.checkout.paymentsDetails(
-        paymentDetailsRequest
-      )
+      const response = await this.checkout.paymentsDetails(paymentDetailsRequest)
 
       if (!response.action) {
         this.paymentStore[orderRef] = {
@@ -115,8 +89,7 @@ export class AdyenServerApi implements AdyenCheckoutServer {
   // eslint-disable-next-line
   async initiatePayment(req: any): Promise<PaymentResponse> {
     try {
-      const shopperIP =
-        req.headers['x-forwarded-for'] || req.connection.remoteAddress
+      const shopperIP = req.headers['x-forwarded-for'] || req.connection.remoteAddress
       const initiatePaymentBody: InitiatePaymentBody = req.body
       const currency = findCurrency(initiatePaymentBody)
       const orderRef = createUniqueReference()
@@ -176,28 +149,17 @@ export class AdyenServerApi implements AdyenCheckoutServer {
     }
   }
 
-  handleNotificationWebhook (
-    notificationRequestItems: NotificationRequestItem[]
-  ): void {
+  handleNotificationWebhook (notificationRequestItems: NotificationRequestItem[]): void {
     notificationRequestItems.forEach((notificationItem) => {
       const { NotificationRequestItem }: any = notificationItem // Wrong typing in Adyen package
       if (NotificationRequestItem.eventCode === 'CANCEL_OR_REFUND') {
-        if (
-          this.validator.validateHMAC(
-            NotificationRequestItem,
-            this._config.hmacKey
-          )
-        ) {
-          const payment = findPayment(
-            NotificationRequestItem.pspReference,
-            this.paymentStore
-          )
+        if (this.validator.validateHMAC(NotificationRequestItem, this._config.hmacKey)) {
+          const payment = findPayment(NotificationRequestItem.pspReference, this.paymentStore)
 
           if (NotificationRequestItem.success === 'true') {
             if (
               'modification.action' in NotificationRequestItem.additionalData &&
-              NotificationRequestItem.additionalData['modification.action'] ===
-                'refund'
+              NotificationRequestItem.additionalData['modification.action'] === 'refund'
             ) {
               payment.status = 'Refunded'
             } else {

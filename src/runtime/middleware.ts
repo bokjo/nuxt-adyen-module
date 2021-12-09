@@ -22,11 +22,7 @@ export const createMiddleware = (configuration: AdyenConfigOptions) => {
   app.get("/api/getPaymentMethods", async (req: any, res: any) => {
     const result = await adyenServerApi.getPaymentMethods()
 
-    res.send({
-      result,
-      clientKey: configuration.clientKey,
-      environment: configuration.environment
-    })
+    res.send({ result, clientKey: configuration.clientKey, environment: configuration.environment })
   })
 
   // eslint-disable-next-line
@@ -67,18 +63,14 @@ export const createMiddleware = (configuration: AdyenConfigOptions) => {
     }
     const orderRef = req?.query?.orderRef
 
-    const response = await adyenServerApi.getPaymentsDetails(
-      { details },
-      orderRef
-    )
+    const response = await adyenServerApi.getPaymentsDetails({ details }, orderRef)
 
     redirectByCode(res, response.resultCode)
   })
 
   // eslint-disable-next-line
   app.post("/api/webhook/notification", (req: any, res: any) => {
-    const notificationRequestItems: NotificationRequestItem[] =
-      req.body.notificationItems
+    const notificationRequestItems: NotificationRequestItem[] = req.body.notificationItems
 
     adyenServerApi.handleNotificationWebhook(notificationRequestItems)
 
