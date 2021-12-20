@@ -4,7 +4,7 @@ import { createMiddleware } from './runtime/middleware'
 import { AdyenClientApi } from './runtime'
 const path = require('path')
 
-export interface ModuleOptions extends AdyenConfigOptions {}
+export interface ModuleOptions extends AdyenConfigOptions { }
 
 const CONFIG_KEY = 'adyen'
 
@@ -16,6 +16,7 @@ const nuxtModule: Module<ModuleOptions> = function (moduleOptions) {
 
   if (!options.clientKey) { throw new Error('[nuxt-adyen-module] property clientKey is required') }
   if (!options.environment) { throw new Error('[nuxt-adyen-module] property environment is required') }
+  if (options.environment && !options.environment.match(/TEST|LIVE/g)) { throw new Error('[nuxt-adyen-module] property environment supported values are "TEST | LIVE"') }
   if (!options.merchantAccount) { throw new Error('[nuxt-adyen-module] property merchantAccount is required') }
   if (!options.returnUrl) { throw new Error('[nuxt-adyen-module] property returnUrl is required') }
   if (!options.origin) { throw new Error('[nuxt-adyen-module] property origin is required') }
@@ -35,9 +36,9 @@ const nuxtModule: Module<ModuleOptions> = function (moduleOptions) {
     fileName: 'adyen.js',
     options: { registerCheckoutComponent: options.registerCheckoutComponent }
   })
-}
+};
 
-;(nuxtModule as any).meta = require('../package.json')
+(nuxtModule as any).meta = require('../package.json')
 
 declare module '@nuxt/types' {
   interface NuxtConfig {

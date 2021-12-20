@@ -19,8 +19,8 @@ The fastest way to get started with **nuxt-adyen-module** is to define the optio
       apiKey: "<YOUR_API_KEY>",
       origin: "http://localhost:8080",
       channel: "Web | IOS | Android",
-      hmacKey: "dwabhidwbaibdwia",
-      environment: "test | live",
+      hmacKey: "<YOUR_HMAC_KEY_KEY>",
+      environment: "TEST | LIVE",
       clientKey: "<YOUR_CLIENT_KEY>",
     }]
   ],
