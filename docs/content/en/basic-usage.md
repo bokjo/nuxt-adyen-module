@@ -38,7 +38,7 @@ These options are passed as is to **@adyen/web**, refer to the [doc](https://git
 In order to use AdyenCheckout.vue component make sure to import it to your project directly from this module:
 
 ```js
-import AdyenCheckout from 'nuxt-adyen-module/src/runtime/AdyenCheckout.vue';
+import AdyenCheckout from 'nuxt-adyen-module/dist/runtime/AdyenCheckout.vue';
 ```
 
 Then, inside of your checkout component make sure to pass all required props, prop functions, and event handlers that are required for the component to work correctly (and for you to have advanced customizability and full control over component behavior)
@@ -59,7 +59,7 @@ Then, inside of your checkout component make sure to pass all required props, pr
 </template>
 
 <script>
-import AdyenCheckout from 'nuxt-adyen-module/src/runtime/AdyenCheckout.vue';
+import AdyenCheckout from 'nuxt-adyen-module/dist/runtime/AdyenCheckout.vue';
 
 export default {
   components: {
