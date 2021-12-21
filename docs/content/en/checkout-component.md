@@ -106,6 +106,41 @@ When passed it will override the onPaymentCompleted handler provided by `nuxt-ad
 
 When passed it will be triggered after submition to handle the redirect for successful or failure response from Adyen.
 
+```js
+<script>
+  export default {
+    methods: {
+      handleRedirectAfterPayment (resultCode) {
+        switch (resultCode) {
+          case 'Authorised':
+            window.location.href = '/result/success'
+            break
+          case 'Pending':
+          case 'Received':
+            window.location.href = '/result/pending'
+            break
+          case 'Refused':
+            window.location.href = '/result/failed'
+            break
+          default:
+            window.location.href = '/result/error'
+            break
+        }
+      }
+    }
+  }
+</script>
+```
+
+```html
+<template>
+  <adyen-checkout
+    ...
+    :handle-redirect-after-payment="handleRedirectAfterPayment"
+  />
+</template>
+```
+
 ### `getPaymentMethods` (to use when server middleware is disabled)
 
 - type: `function`
