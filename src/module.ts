@@ -14,37 +14,17 @@ const nuxtModule: Module<ModuleOptions> = function (moduleOptions) {
     ...moduleOptions
   }
 
-  if (!options.clientKey) {
-    throw new Error('[nuxt-adyen-module] property clientKey is required')
-  }
-  if (!options.environment) {
-    throw new Error('[nuxt-adyen-module] property environment is required')
-  }
-  if (options.environment && !options.environment.match(/TEST|LIVE/g)) {
-    throw new Error(
-      '[nuxt-adyen-module] property environment supported values are "TEST | LIVE"'
+  if (!options.clientKey) { throw new Error('[nuxt-adyen-module] property clientKey is required')  }
+  if (!options.environment) { throw new Error('[nuxt-adyen-module] property environment is required') }
+  if (options.environment && !options.environment.match(/TEST|LIVE/g)) { throw new Error('[nuxt-adyen-module] property environment supported values are "TEST | LIVE"') }
+  if (!options.merchantAccount) {throw new Error('[nuxt-adyen-module] property merchantAccount is required') }
+  if (!options.returnUrl) {throw new Error('[nuxt-adyen-module] property returnUrl is required') }
+  if (!options.origin) {throw new Error('[nuxt-adyen-module] property origin is required') }
+  if (!options.checkoutEndpoint) {throw new Error(     '[nuxt-adyen-module] property checkoutEndpoint is required'
     )
   }
-  if (!options.merchantAccount) {
-    throw new Error('[nuxt-adyen-module] property merchantAccount is required')
-  }
-  if (!options.returnUrl) {
-    throw new Error('[nuxt-adyen-module] property returnUrl is required')
-  }
-  if (!options.origin) {
-    throw new Error('[nuxt-adyen-module] property origin is required')
-  }
-  if (!options.checkoutEndpoint) {
-    throw new Error(
-      '[nuxt-adyen-module] property checkoutEndpoint is required'
-    )
-  }
-  if (!options.apiKey) {
-    throw new Error('[nuxt-adyen-module] property apiKey is required')
-  }
-  if (!options.channel) {
-    throw new Error('[nuxt-adyen-module] property channel is required')
-  }
+  if (!options.apiKey) {throw new Error('[nuxt-adyen-module] property apiKey is required') }
+  if (!options.channel) {throw new Error('[nuxt-adyen-module] property channel is required') }
 
   const runtimeDir = path.resolve(__dirname, 'runtime')
   this.nuxt.options.alias['~adyen'] = runtimeDir
@@ -58,19 +38,19 @@ const nuxtModule: Module<ModuleOptions> = function (moduleOptions) {
     fileName: 'adyen.js',
     options: { registerCheckoutComponent: options.registerCheckoutComponent }
   })
-};
+}
 
-(nuxtModule as any).meta = require('../package.json')
+;(nuxtModule as any).meta = require('../package.json')
 
 declare module '@nuxt/types' {
   interface NuxtConfig {
-    [CONFIG_KEY]: ModuleOptions;
+    [CONFIG_KEY]: ModuleOptions
   } // Nuxt 2.14+
   interface Configuration {
-    [CONFIG_KEY]: ModuleOptions;
+    [CONFIG_KEY]: ModuleOptions
   } // Nuxt 2.9 - 2.13
   interface Context {
-    $adyen: AdyenClientApi;
+    $adyen: AdyenClientApi
   }
 }
 
